@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html>
+  <head><meta name="generator" content="Hexo 3.8.0">
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+  <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport">
+  <meta name="description" content="iznauy&#39;s blog">
+  <meta name="keyword" content="hexo-theme, vuejs">
+  
+    <link rel="shortcut icon" href="/css/images/logo.png">
+  
+  <title>
+    
+      春招总结 | Hexo
+    
+  </title>
+  <link href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+  <link href="//cdnjs.cloudflare.com/ajax/libs/nprogress/0.2.0/nprogress.min.css" rel="stylesheet">
+  <link href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/tomorrow.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="/css/style.css">
+  
+  <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/geopattern/1.2.3/js/geopattern.min.js"></script>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/nprogress/0.2.0/nprogress.min.js"></script>
+  
+    <script src="/js/qrious.js"></script>
+  
+  
+  
+  
+    <!-- MathJax support START -->
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+      });
+    </script>
+
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+      });
+    </script>
+    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <!-- MathJax support END -->
+  
+
+
+</head>
+<div class="wechat-share">
+  <img src="/css/images/logo.png">
+</div>
+
+  <body>
+    <header class="header fixed-header">
+  <div class="header-container">
+    <a class="home-link" href="/">
+      <div class="logo"></div>
+      <span>Hexo</span>
+    </a>
+    <ul class="right-list">
+      
+        <li class="list-item">
+          
+            <a href="/" class="item-link">Home</a>
+          
+        </li>
+      
+        <li class="list-item">
+          
+            <a href="/tags/" class="item-link">Tags</a>
+          
+        </li>
+      
+        <li class="list-item">
+          
+            <a href="/archives/" class="item-link">Archives</a>
+          
+        </li>
+      
+        <li class="list-item">
+          
+            <a href="/project/" class="item-link">Projects</a>
+          
+        </li>
+      
+        <li class="list-item">
+          
+            <a href="/about/" class="item-link">About</a>
+          
+        </li>
+      
+    </ul>
+    <div class="menu">
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+    </div>
+    <div class="menu-mask">
+      <ul class="menu-list">
+        
+          <li class="menu-item">
+            
+              <a href="/" class="menu-link">Home</a>
+            
+          </li>
+        
+          <li class="menu-item">
+            
+              <a href="/tags/" class="menu-link">Tags</a>
+            
+          </li>
+        
+          <li class="menu-item">
+            
+              <a href="/archives/" class="menu-link">Archives</a>
+            
+          </li>
+        
+          <li class="menu-item">
+            
+              <a href="/project/" class="menu-link">Projects</a>
+            
+          </li>
+        
+          <li class="menu-item">
+            
+              <a href="/about/" class="menu-link">About</a>
+            
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</header>
+
+    <div id="article-banner">
+  <h2>春招总结</h2>
+  <p class="post-date">2019-04-03</p>
+  <div class="arrow-down">
+    <a href="javascript:;"></a>
+  </div>
+</div>
+<main class="app-body flex-box">
+  <!-- Article START -->
+  <article class="post-article">
+    <section class="markdown-content"><h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p>最近刚刚期末考完，终于能有时间来总结下过去的一个月。</p>
+<p>这一个月可以算得上是大学里最忙的一个月了——忙着 J2EE 大作业，忙着找实习，忙着跑实验，忙着准备期末考试。每天早出晚归，过着寝室、食堂、机房三点一线的生活。</p>
+<p>不过这个月也可以说是大学里最充实的一个月，学到的东西可能比去年一整年还要多——从对 JVM、多线程一无所知，到可以和面试官侃侃而谈底层实现、框架原理。希望以后继续坚持像这段时间一样，努力提升自己。</p>
+<p>总的来说，结果还算是比较满意的，拿到了头条、阿里、腾讯的 offer（实际上也只投了这三家）。</p>
+<h3 id="经历"><a href="#经历" class="headerlink" title="经历"></a>经历</h3><h4 id="腾讯"><a href="#腾讯" class="headerlink" title="腾讯"></a>腾讯</h4><p>腾讯我参加的是提前批。</p>
+<p>腾讯提前批要求3月7号之前完善简历，然后3月8日笔试，笔试的内容是5道算法题，大约2道 easy，2道 medium，1道 hard。我做出来了4道，对着最后一题发了半小时的呆。不过笔试也不是必须的，只是提供给面试官的一个参考。</p>
+<p>面试的话，技术性的面试一共两轮。</p>
+<p>第一轮聊得比较投缘，问了很多基础知识，主要是计算机网络、C++、操作系统、Linux这几块，最后从项目出发深入问了数据库的很多东西，不得不说刘嘉老师的课还是有点东西的，凭借着对数据库开发技术一些零星记忆，基本都答了出来。面试官应该也很满意，最后跟我扯了半天他们部门（腾讯视频会员部，如果接了 offer 是不是有免费的会员用）。</p>
+<p>第二轮深入怼操作系统的知识，给了一个场景问题，问的非常深。问完问了一些基础，问了一道海量数据量的问题，最后问我愿不愿意去深圳。第二天就进入了 HR 面环节。</p>
+<p>HR 比较随和，聊了半天人生。周五下午面的 HR，周一收到 offer，也是我收到的第一个 offer。</p>
+<p>总的来说，腾讯面的轮数是最短的，整体难度也是最低的。不过后台岗对软院同学可能不是那么友好：一大堆C++和操作系统底层的问题，这些问题我们平时都是遇不到的。</p>
+<p>其实腾讯前景还是比较好的，不过要转语言，而且离家太远了，最终拒掉了。</p>
+<h4 id="阿里"><a href="#阿里" class="headerlink" title="阿里"></a>阿里</h4><p>阿里流程比较复杂，首先你需要登上网站填写一个表，还有3道开放问题。然后要进行综合素质测试。之后会进入简历筛选阶段，一般会有一个简历面试，问一些你项目的基本情况，过了才有后续流程。</p>
+<p>正式技术面试一般2~3轮：普通技术人员面一轮，部门主管面一轮，交叉面一轮，交叉面不是每个人都有的，只有当你前几轮面试评级达到 A 才有。这儿不得不吐槽下阿里的面试，永远不会和你约定时间，而是在某个晚上直接打电话过来，问你有没有空，如果有空，直接开始面试。</p>
+<p>简历面就大致讲了下自己的项目的基本情况。</p>
+<p>简历面大约一周之后，进行一面。一面是我面的最好的一轮面试，和面试官全程侃侃而谈，从他提出的问题，不断延展，甚至把他提的几个问题联系起来，讲了它们更加深层次的关系。不出意外的话，这一轮评级应该是 A+。面完之后，他就加了我的微信。</p>
+<p>后面的几轮面试多多少少有点匆忙。我拿到了腾讯 offer 之后发了条朋友圈，然后被面试官看到了，当晚就加急给我安排了老大面，第二天晚上十点半交叉面，第三天中午 HR 面，三天连过三轮。老大面一开始就怼项目，问的非常深入，暴露了项目本身只是一个玩具级项目的事实。项目被锤爆了之后问了一个设计题，然后又问了很多基础，从算法、计组、到 JVM、Spring 原理等。总的来说表现的还可以，最后给我讲了下部门的具体工作。</p>
+<p>交叉面主要问一些学习历程、个人的经历之类的，没有问太多硬核的技术。最后问我头条、腾讯走到什么流程了（感觉被一面面试官卖了），问完之后告诉我说等会会把我的资料交给 HR，抓紧时间把流程走完。</p>
+<p>阿里 HR 面和我想的有点不一样。基本都是在怼技术问题，最后问了点职业规划的问题。阿里 HR 权利极高，懂技术，还有一票否决权，在阿里内部，技术类的岗位一般要比 HR 高两级才能压住 HR。</p>
+<p>周三面完 HR，周五就收到了意向书。目前 offer 还在报批，估计这几天就会下来。</p>
+<h4 id="字节跳动"><a href="#字节跳动" class="headerlink" title="字节跳动"></a>字节跳动</h4><p>头条的面试质量很高。我投的部门是抖音（上海）。</p>
+<p>和阿里一样，头条也是有个简历面，考察一些基本的问题，范围很广，计组、操作系统、数据库、数据结构等计算机基础都会被问到。简历面后收到了后续视频面试的邀请。</p>
+<p>简历面通过之后就是三轮技术面试。一般说来，这三轮技术面试会一天完成。我是从下午4点一直面试到9点，技术面试面完之后几分钟 HR 直接加了我微信，让我确定入职时间之后就发 offer，还是非常效率的。</p>
+<p>总的来说，技术面试的内容的范围很广，问的也很深入。</p>
+<p>一面的话，是个非常有趣的小哥面的，问了很多很深的东西，比如 Spring Bean 循环依赖、Spring AOP 和 Spring Bean 生命周期如何结合、JDK 动态代理为什么需要实现接口等等。很多问题之前没有想过，全靠临场发挥。数据结构、JVM 也问了很多，然后问了很久的场景题，题目本身也都很实际、很有趣，最后让手撕长整数乘法。写了十几行就问我是不是经常刷算法题，直接让我过了。</p>
+<p>二面问的要更基础些。问完之后手撕二叉树 Z 型打印。写完之后也没运行，让我去吃饭，吃完饭继续面第三轮。</p>
+<p>三面问了项目、框架原理以及一些基础知识之后，就开始做智力题：</p>
+<blockquote>
+<p>一个岛，有人带红帽子，有人带白帽子，每人只能看见别人的帽子，看不见自己的帽子。这个岛上有一些神奇的规定：大家每天都要到操场上集体见个面；不能透漏给对方对方带的是什么帽子；如果你发现了自己带的是红帽子，当天晚上就要坐船离开这个岛。有一个外乡人，到了岛上，告诉大家：你们之中至少有一顶红帽子。问这个岛最终的人员去留？每一天会有哪些人离开？最终又会剩下哪些人？</p>
+</blockquote>
+<p>非常有意思。做完智力题之后手撕代码：K 个有序链表合并，并分析复杂度。我大二算法课好像做过，很快就讲出了思路，然后花了10分钟实现了下，他也没有实际运行。最后聊了下部门的工作。</p>
+<p>严格意义上没有 HR 面，不过还是和 HR 打电话稍微聊了下待遇、入职时间什么的。</p>
+<p>头条待遇真的不过，不过分到的部门是 IM，有点落后于时代。</p>
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p>目前还在阿里和头条之间纠结，希望能尽快纠结出一个结果吧~</p>
+</section>
+    <!-- Tags START -->
+    
+      <div class="tags">
+        <span>Tags:</span>
+        
+  <a href="/tags#Work">
+    <span class="tag-code">Work</span>
+  </a>
+
+      </div>
+    
+    <!-- Tags END -->
+    <!-- NAV START -->
+    
+  <div class="nav-container">
+    <!-- reverse left and right to put prev and next in a more logic postition -->
+    
+      <a class="nav-left" href="/2019/04/03/First Poster/">
+        <span class="nav-arrow">← </span>
+        
+          开博小记
+        
+      </a>
+    
+    
+  </div>
+
+    <!-- NAV END -->
+    <!-- 打赏 START -->
+    
+    <!-- 打赏 END -->
+    <!-- 二维码 START -->
+    
+      <div class="qrcode">
+        <canvas id="share-qrcode"></canvas>
+        <p class="notice">扫描二维码，分享此文章</p>
+      </div>
+    
+    <!-- 二维码 END -->
+    
+      <!-- No Comment -->
+    
+  </article>
+  <!-- Article END -->
+  <!-- Catalog START -->
+  
+    <aside class="catalog-container">
+  <div class="toc-main">
+    <strong class="toc-title">Catalog</strong>
+    
+      <ol class="toc-nav"><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#前言"><span class="toc-nav-text">前言</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#经历"><span class="toc-nav-text">经历</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-4"><a class="toc-nav-link" href="#腾讯"><span class="toc-nav-text">腾讯</span></a></li><li class="toc-nav-item toc-nav-level-4"><a class="toc-nav-link" href="#阿里"><span class="toc-nav-text">阿里</span></a></li><li class="toc-nav-item toc-nav-level-4"><a class="toc-nav-link" href="#字节跳动"><span class="toc-nav-text">字节跳动</span></a></li></ol></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#总结"><span class="toc-nav-text">总结</span></a></li></ol>
+    
+  </div>
+</aside>
+  
+  <!-- Catalog END -->
+</main>
+
+<script>
+  (function () {
+    var url = 'http://yoursite.com/2019/04/03/春招总结/';
+    var banner = 'http://file.muyutech.com/about.jpg'
+    if (banner !== '' && banner !== 'undefined' && banner !== 'null') {
+      $('#article-banner').css({
+        'background-image': 'url(' + banner + ')'
+      })
+    } else {
+      $('#article-banner').geopattern(url)
+    }
+    $('.header').removeClass('fixed-header')
+
+    // error image
+    $(".markdown-content img").on('error', function() {
+      $(this).attr('src', 'http://file.muyutech.com/error-img.png')
+      $(this).css({
+        'cursor': 'default'
+      })
+    })
+
+    // zoom image
+    $(".markdown-content img").on('click', function() {
+      var src = $(this).attr('src')
+      if (src !== 'http://file.muyutech.com/error-img.png') {
+        var imageW = $(this).width()
+        var imageH = $(this).height()
+
+        var zoom = ($(window).width() * 0.95 / imageW).toFixed(2)
+        zoom = zoom < 1 ? 1 : zoom
+        zoom = zoom > 2 ? 2 : zoom
+        var transY = (($(window).height() - imageH) / 2).toFixed(2)
+
+        $('body').append('<div class="image-view-wrap"><div class="image-view-inner"><img src="'+ src +'" /></div></div>')
+        $('.image-view-wrap').addClass('wrap-active')
+        $('.image-view-wrap img').css({
+          'width': `${imageW}`,
+          'transform': `translate3d(0, ${transY}px, 0) scale3d(${zoom}, ${zoom}, 1)`
+        })
+        $('html').css('overflow', 'hidden')
+
+        $('.image-view-wrap').on('click', function() {
+          $(this).remove()
+          $('html').attr('style', '')
+        })
+      }
+    })
+  })();
+</script>
+
+
+  <script>
+    var qr = new QRious({
+      element: document.getElementById('share-qrcode'),
+      value: document.location.href
+    });
+  </script>
+
+
+
+
+
+
+    <div class="scroll-top">
+  <span class="arrow-icon"></span>
+</div>
+    <footer class="app-footer">
+  <p class="copyright">
+    &copy; 2019 | Proudly powered by <a href="https://hexo.io" target="_blank">Hexo</a>
+    <br>
+    Theme by <a href="https://github.com/yanm1ng">yanm1ng</a>
+  </p>
+</footer>
+
+<script>
+  function async(u, c) {
+    var d = document, t = 'script',
+      o = d.createElement(t),
+      s = d.getElementsByTagName(t)[0];
+    o.src = u;
+    if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+    s.parentNode.insertBefore(o, s);
+  }
+</script>
+<script>
+  async("//cdnjs.cloudflare.com/ajax/libs/fastclick/1.0.6/fastclick.min.js", function(){
+    FastClick.attach(document.body);
+  })
+</script>
+
+<script>
+  var hasLine = 'true';
+  async("//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js", function(){
+    $('figure pre').each(function(i, block) {
+      var figure = $(this).parents('figure');
+      if (hasLine === 'false') {
+        figure.find('.gutter').hide();
+      }
+      var lang = figure.attr('class').split(' ')[1] || 'code';
+      var codeHtml = $(this).html();
+      var codeTag = document.createElement('code');
+      codeTag.className = lang;
+      codeTag.innerHTML = codeHtml;
+      $(this).attr('class', '').empty().html(codeTag);
+      figure.attr('data-lang', lang.toUpperCase());
+      hljs.highlightBlock(block);
+    });
+  })
+</script>
+<!-- Baidu Tongji -->
+
+<script src="/js/script.js"></script>
+  </body>
+</html>
