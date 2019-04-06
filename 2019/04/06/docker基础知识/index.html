@@ -149,23 +149,23 @@
 <main class="app-body flex-box">
   <!-- Article START -->
   <article class="post-article">
-    <section class="markdown-content"><h2 id="概论"><a href="#概论" class="headerlink" title="概论"></a>概论</h2><p>Docker 是一个开源的应用容器引擎，可以让开发者打包他们的应用以及依赖包到一个轻量级、可移植的容器中，然后发布到任何流行的 Linux 机器上，也可以实现虚拟化。</p>
+    <section class="markdown-content"><h3 id="概论"><a href="#概论" class="headerlink" title="概论"></a>概论</h3><p>Docker 是一个开源的应用容器引擎，可以让开发者打包他们的应用以及依赖包到一个轻量级、可移植的容器中，然后发布到任何流行的 Linux 机器上，也可以实现虚拟化。</p>
 <p>Docker 使用 C/S 架构，使用远程 API 来管理和创建 Docker 容器。Docker 容器通过 Docker 镜像来创建。容器和镜像的关系有点类似于面向对象中的对象与类。</p>
-<h2 id="和虚拟机的差别"><a href="#和虚拟机的差别" class="headerlink" title="和虚拟机的差别"></a>和虚拟机的差别</h2><p>Docker 可以简单理解为一个轻量级的虚拟机，但实际上 Docker 和虚拟机的差别是很大的。</p>
-<h3 id="虚拟机架构"><a href="#虚拟机架构" class="headerlink" title="虚拟机架构"></a>虚拟机架构</h3><p><img src="https://s2.ax1x.com/2019/04/06/AWdg1O.jpg" alt="图0：[外文翻译]虚拟机与Docker有何不同？"></p>
+<h3 id="和虚拟机的差别"><a href="#和虚拟机的差别" class="headerlink" title="和虚拟机的差别"></a>和虚拟机的差别</h3><p>Docker 可以简单理解为一个轻量级的虚拟机，但实际上 Docker 和虚拟机的差别是很大的。</p>
+<h4 id="虚拟机架构"><a href="#虚拟机架构" class="headerlink" title="虚拟机架构"></a>虚拟机架构</h4><p><img src="https://s2.ax1x.com/2019/04/06/AWdg1O.jpg" alt="图0：[外文翻译]虚拟机与Docker有何不同？"></p>
 <p>Guest OS 是为虚拟机安装的操作系统，是一个完整的操作系统内核。Hypervisor 层可以理解为一个硬件虚拟化平台，在 Host OS 是以内核态的驱动存在的。</p>
 <p>虚拟机实现资源隔离是利用独立的 OS，并且利用 Hypervisor 虚拟化 CPU、内存、I/O 设备。Hypervisor会为每个虚拟的CPU创建一个数据结构，模拟CPU的全部寄存器的值，在适当的时候跟踪并修改这些值。需要指出的是在大多数情况下，虚拟机软件代码是直接跑在硬件上的，而不需要Hypervisor介入。只有在一些权限高的请求下，Guest OS需要运行内核态修改CPU的寄存器数据，Hypervisor会介入，修改并维护虚拟的CPU状态。</p>
 <p>Hypersivor 实现内存虚拟化是创建一个 shadow page table。正常情况下页表实现虚拟内存到物理内存的翻译。在虚拟化的情况下，物理内存仍然是虚拟的，所以需要 shadow table 来实现 虚拟内存 - 虚拟的物理内存 - 真实的物理内存的转化。</p>
 <p>对于 I/O 设备虚拟化，也是使用软件模拟的。比如虚拟机写文件时候，实际是写入一个 HOST OS 的文件上，文件模拟了虚拟的磁盘。</p>
-<h3 id="Docker-架构"><a href="#Docker-架构" class="headerlink" title="Docker 架构"></a>Docker 架构</h3><p><img src="https://s2.ax1x.com/2019/04/06/AWdyh6.jpg" alt="图1：[外文翻译]虚拟机与Docker有何不同？"></p>
+<h4 id="Docker-架构"><a href="#Docker-架构" class="headerlink" title="Docker 架构"></a>Docker 架构</h4><p><img src="https://s2.ax1x.com/2019/04/06/AWdyh6.jpg" alt="图1：[外文翻译]虚拟机与Docker有何不同？"></p>
 <p>Docker Daemon 是对 Linux NameSpace、Cgroup、镜像管理文件系统的封装。没有利用一个独立的 Guest OS 实现环境隔离，而是利用 Linux 内核本身支持的容器方式实现资源和环境隔离。</p>
 <p><a href="https://coolshell.cn/articles/17010.html" target="_blank" rel="noopener">Linux NameSpace 负责实现环境隔离</a>；<a href="https://coolshell.cn/articles/17049.html" target="_blank" rel="noopener">Cgroup 负责实现资源限制</a>；利用镜像实现根目录环境隔离。</p>
-<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><ul>
+<h4 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h4><ul>
 <li>Docker 速度更快，占用资源更少</li>
 <li>虚拟机隔离性强于 Docker，Docker 主要是进程级别的隔离，一旦 Docker 中进程取得了 root 权限，实际上也就是获得了宿主机的 root 权限，进而就可以破坏隔离性。</li>
 <li>虚拟机可以通过镜像实现环境交付的一致性，但是镜像分发无法体系化；Docker 在 Dockerfile 中记录了容器的构建过程，在集群中可以实现快速分发和快速部署。</li>
 </ul>
-<h2 id="使用的几个例子"><a href="#使用的几个例子" class="headerlink" title="使用的几个例子"></a>使用的几个例子</h2><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker run ubuntu:15.10 /bin/echo "Hello, world"</span><br></pre></td></tr></table></figure>
+<h3 id="使用的几个例子"><a href="#使用的几个例子" class="headerlink" title="使用的几个例子"></a>使用的几个例子</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker run ubuntu:15.10 /bin/echo "Hello, world"</span><br></pre></td></tr></table></figure>
 <p>Docker 以 ubuntu15.10 镜像创建一个新容器，然后在容器中执行 echo 命令。</p>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker run -i -t ubuntu:15.10 /bin/bash</span><br></pre></td></tr></table></figure>
 <p>参数：</p>
@@ -177,7 +177,7 @@
 <p>-d 表示运行在后台，命令会返回一个长字符串（容器的 ID），可以通过 <code>docker ps</code> 来查看当前运行的容器。</p>
 <p>使用<code>docker logs docker_id</code>可以查看后台运行的 docker 的输出。</p>
 <p>可以使用<code>docker stop</code> 来停止容器运行</p>
-<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><ol>
+<h3 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h3><ol>
 <li><a href="https://blog.csdn.net/xzwspy/article/details/81154945" target="_blank" rel="noopener">Docker 与虚拟机简介以及比较</a></li>
 <li><a href="https://www.cnblogs.com/kex1n/p/6933039.html" target="_blank" rel="noopener">虚拟机与 Docker 有何不同</a></li>
 <li><a href="http://www.runoob.com/docker/docker-tutorial.html" target="_blank" rel="noopener">菜鸟教程</a></li>
@@ -233,7 +233,7 @@
   <div class="toc-main">
     <strong class="toc-title">Catalog</strong>
     
-      <ol class="toc-nav"><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#概论"><span class="toc-nav-text">概论</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#和虚拟机的差别"><span class="toc-nav-text">和虚拟机的差别</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#虚拟机架构"><span class="toc-nav-text">虚拟机架构</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#Docker-架构"><span class="toc-nav-text">Docker 架构</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#总结"><span class="toc-nav-text">总结</span></a></li></ol></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#使用的几个例子"><span class="toc-nav-text">使用的几个例子</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#参考"><span class="toc-nav-text">参考</span></a></li></ol>
+      <ol class="toc-nav"><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#概论"><span class="toc-nav-text">概论</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#和虚拟机的差别"><span class="toc-nav-text">和虚拟机的差别</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-4"><a class="toc-nav-link" href="#虚拟机架构"><span class="toc-nav-text">虚拟机架构</span></a></li><li class="toc-nav-item toc-nav-level-4"><a class="toc-nav-link" href="#Docker-架构"><span class="toc-nav-text">Docker 架构</span></a></li><li class="toc-nav-item toc-nav-level-4"><a class="toc-nav-link" href="#总结"><span class="toc-nav-text">总结</span></a></li></ol></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#使用的几个例子"><span class="toc-nav-text">使用的几个例子</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#参考"><span class="toc-nav-text">参考</span></a></li></ol>
     
   </div>
 </aside>
