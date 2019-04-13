@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html>
+  <head><meta name="generator" content="Hexo 3.8.0">
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+  <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport">
+  <meta name="description" content="iznauy&#39;s blog">
+  <meta name="keyword" content="hexo-theme, vuejs">
+  
+    <link rel="shortcut icon" href="/css/images/logo.png">
+  
+  <title>
+    
+      Spring事务管理 | Hexo
+    
+  </title>
+  <link href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+  <link href="//cdnjs.cloudflare.com/ajax/libs/nprogress/0.2.0/nprogress.min.css" rel="stylesheet">
+  <link href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/tomorrow.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="/css/style.css">
+  
+  <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/geopattern/1.2.3/js/geopattern.min.js"></script>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/nprogress/0.2.0/nprogress.min.js"></script>
+  
+    <script src="/js/qrious.js"></script>
+  
+  
+  
+  
+    <!-- MathJax support START -->
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+      });
+    </script>
+
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+      });
+    </script>
+    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <!-- MathJax support END -->
+  
+
+
+</head>
+<div class="wechat-share">
+  <img src="/css/images/logo.png">
+</div>
+
+  <body>
+    <header class="header fixed-header">
+  <div class="header-container">
+    <a class="home-link" href="/">
+      <div class="logo"></div>
+      <span>Hexo</span>
+    </a>
+    <ul class="right-list">
+      
+        <li class="list-item">
+          
+            <a href="/" class="item-link">Home</a>
+          
+        </li>
+      
+        <li class="list-item">
+          
+            <a href="/tags/" class="item-link">Tags</a>
+          
+        </li>
+      
+        <li class="list-item">
+          
+            <a href="/archives/" class="item-link">Archives</a>
+          
+        </li>
+      
+        <li class="list-item">
+          
+            <a href="/project/" class="item-link">Projects</a>
+          
+        </li>
+      
+        <li class="list-item">
+          
+            <a href="/about/" class="item-link">About</a>
+          
+        </li>
+      
+    </ul>
+    <div class="menu">
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+    </div>
+    <div class="menu-mask">
+      <ul class="menu-list">
+        
+          <li class="menu-item">
+            
+              <a href="/" class="menu-link">Home</a>
+            
+          </li>
+        
+          <li class="menu-item">
+            
+              <a href="/tags/" class="menu-link">Tags</a>
+            
+          </li>
+        
+          <li class="menu-item">
+            
+              <a href="/archives/" class="menu-link">Archives</a>
+            
+          </li>
+        
+          <li class="menu-item">
+            
+              <a href="/project/" class="menu-link">Projects</a>
+            
+          </li>
+        
+          <li class="menu-item">
+            
+              <a href="/about/" class="menu-link">About</a>
+            
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</header>
+
+    <div id="article-banner">
+  <h2>Spring事务管理</h2>
+  <p class="post-date">2019-04-13</p>
+  <div class="arrow-down">
+    <a href="javascript:;"></a>
+  </div>
+</div>
+<main class="app-body flex-box">
+  <!-- Article START -->
+  <article class="post-article">
+    <section class="markdown-content"><blockquote>
+<p>之前面试时候（阿里三面）有被问到过 Spring 中的事务管理，当时基本不懂，回答的相当辣眼睛。<br>最近在造轮子时候用到了这方面的一些东西，干脆写篇博客来整理下这块的知识。很多内容源自于<a href="https://blog.csdn.net/trigl/article/details/50968079" target="_blank" rel="noopener">这篇博客</a>。</p>
+</blockquote>
+<h2 id="核心接口"><a href="#核心接口" class="headerlink" title="核心接口"></a>核心接口</h2><p><img src="https://img-blog.csdn.net/20160324011156424" alt="这里写图片描述"></p>
+<h3 id="事务管理器"><a href="#事务管理器" class="headerlink" title="事务管理器"></a>事务管理器</h3><p>Spring 不直接管理事务，而是提供了多个事务管理器，将事务管理的职责委托给 Hibernate 或者 JPA 等持久化机制所提供的相关平台框架的事务来实现。</p>
+<p>Spring 事务管理器的接口是 <code>PlatformTransactionManager</code>，不同的持久化框架都实现了该接口，提供了对应的事务管理器。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">PlatformTransactionManager</span> </span>&#123;</span><br><span class="line"><span class="comment">// 取得 TransactionStatus 对象，开启事务</span></span><br><span class="line"><span class="function">TransactionStatus <span class="title">getTransaction</span><span class="params">(@Nullable TransactionDefinition var1)</span> <span class="keyword">throws</span> TransactionException</span>;</span><br><span class="line"><span class="comment">// 提交</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">commit</span><span class="params">(TransactionStatus var1)</span> <span class="keyword">throws</span> TransactionException</span>;</span><br><span class="line"><span class="comment">// 回滚</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">rollback</span><span class="params">(TransactionStatus var1)</span> <span class="keyword">throws</span> TransactionException</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>具体的事务管理的实现，对于 Spring 来说是透明的，Spring 不关心底层采用了什么样的事务管理方法和实现机制，为不同的事务 API 提供一致的编程模型。</p>
+<h3 id="基本事务属性"><a href="#基本事务属性" class="headerlink" title="基本事务属性"></a>基本事务属性</h3><p><img src="https://img-blog.csdn.net/20160325003448793" alt="这里写图片描述"></p>
+<p>事务属性是对事务的一些基本配置，描述了事务应当如何应用到方法上，事务包含了5个方面，如上图所示。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">TransactionDefinition</span> </span>&#123;</span><br><span class="line"><span class="comment">// 返回事务传播行为</span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">getPropagationBehavior</span><span class="params">()</span></span>;</span><br><span class="line"><span class="comment">// 获取事务隔离级别：SQL 中的脏读，读提交，可重复读，串行化。</span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">getIsolationLevel</span><span class="params">()</span></span>;</span><br><span class="line"><span class="comment">// 设置事务超时时间</span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">getTimeout</span><span class="params">()</span></span>;</span><br><span class="line"><span class="comment">// 事务是否只读，事务管理器能够根据这个来进行优化，确保事务是只读的</span></span><br><span class="line"><span class="function"><span class="keyword">boolean</span> <span class="title">isReadOnly</span><span class="params">()</span></span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="传播行为"><a href="#传播行为" class="headerlink" title="传播行为"></a>传播行为</h4><p>事务的第一个属性是传播行为，当事务方法被另一个事务方法调用时候，必须制定事务如何传播。比如，方法可能继续在当前事务中运行，也可能另外开启一个新事务，在自己的事务中运行。Spring 定义了七种传播行为：</p>
+<table>
+<thead>
+<tr>
+<th>传播行为</th>
+<th>含义</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>PROPAGATION_REQUIRED</td>
+<td>表示当前方法必须运行在事务中，如果当前事务存在，方法会在该事务中运行，否则会启动一个新的事务</td>
+</tr>
+<tr>
+<td>PROPAGATION_SUPPORTS</td>
+<td>表示当前方法不需要事务上下文，但是如果当前事务存在的话，那么该方法会在这个事务中运行</td>
+</tr>
+<tr>
+<td>PROPAGATION_MANDATORY</td>
+<td>表示当前方法必须运行在事务中，如果事务不存在，就抛出一个异常</td>
+</tr>
+<tr>
+<td>PROPAGATION_REQUIRED_NEW</td>
+<td>表示当前方法必须运行在自己的事务中。一个新的事务将被启动。如果存在当前事务，那么在方法执行期间，当前事务会被挂起。如果使用<code>JTATransactionManager</code>的话，则需要访问<code>TransactionManager</code></td>
+</tr>
+<tr>
+<td>PROPAGATION_NOT_SUPPORTED</td>
+<td>表示当前方法不应该运行在事务中。如果存在当前事务，在方法运行期间，当前事务被挂起。如果使用<code>JTATransactionManager</code>的话，则需要访问<code>TransactionManager</code></td>
+</tr>
+<tr>
+<td>PROPAGATION_NEVER</td>
+<td>表示当前方法不运行在事务上下文中。如果当前正有一个事务在运行，则会抛出异常。</td>
+</tr>
+<tr>
+<td>PROPAGATION_NESTED</td>
+<td>表示如果当前已经存在一个事务，那么该方法会在嵌套事务中运行，嵌套的事务可以独立于当前事务进行单独提交或回滚。如果事务不存在，则行为和 PROPAGATION_REQUIRED 一致。</td>
+</tr>
+</tbody>
+</table>
+<h5 id="PROPAGATION-REQUIRED"><a href="#PROPAGATION-REQUIRED" class="headerlink" title="PROPAGATION_REQUIRED"></a>PROPAGATION_REQUIRED</h5><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">methodA</span><span class="params">()</span> </span>&#123; <span class="comment">// PROPAGATION_REQUIRED</span></span><br><span class="line">...</span><br><span class="line">methodB();</span><br><span class="line">...</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">methodB</span><span class="params">()</span> </span>&#123; <span class="comment">// PROPAGATION_REQUIRED</span></span><br><span class="line">... </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>使用 Spring 声明式事务的话，Spring 会使用 AOP 技术对类进行增强，会根据事务的属性，自动在方法调用前决定是否开始一个事务，并且在方法执行后决定事务提交或是回滚。</p>
+<p>调用方法 B 相当于：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">Connection conn = <span class="keyword">null</span>;</span><br><span class="line"><span class="keyword">try</span> &#123;</span><br><span class="line">con = getConnection();</span><br><span class="line">con.setAutoCommit(<span class="keyword">false</span>);</span><br><span class="line"></span><br><span class="line">methodB();</span><br><span class="line"></span><br><span class="line">con.commit();</span><br><span class="line">&#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">con.rollback();</span><br><span class="line">&#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">closeCon(); <span class="comment">// 释放资源</span></span><br><span class="line">&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>运行方法 A 的时候，和调用方法 B 类似，因为已经存在了一个事务。</p>
+<h5 id="PROPAGATION-SUPPORTS"><a href="#PROPAGATION-SUPPORTS" class="headerlink" title="PROPAGATION_SUPPORTS"></a>PROPAGATION_SUPPORTS</h5><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">methodA</span><span class="params">()</span> </span>&#123; <span class="comment">// PROPAGATION_REQUIRED</span></span><br><span class="line">	<span class="comment">// some code</span></span><br><span class="line">	methodB();</span><br><span class="line">	<span class="comment">// some code</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">methodB</span><span class="params">()</span> </span>&#123; <span class="comment">// PROPAGATION_SUPPORTS</span></span><br><span class="line">	<span class="comment">// some code</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>单纯的调用执行方法 B，是不会开启事务的，执行 A 的时候，B 自动加入到 A 开启的事务中执行。</p>
+<h5 id="PROPAGATION-MANDATORY"><a href="#PROPAGATION-MANDATORY" class="headerlink" title="PROPAGATION_MANDATORY"></a>PROPAGATION_MANDATORY</h5><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">methodA</span><span class="params">()</span> </span>&#123; <span class="comment">// PROPAGATION_REQUIRED</span></span><br><span class="line">	<span class="comment">// some code</span></span><br><span class="line">	methodB();</span><br><span class="line">	<span class="comment">// some code</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">methodB</span><span class="params">()</span> </span>&#123; <span class="comment">// PROPAGATION_MANDATORY</span></span><br><span class="line">	<span class="comment">// some code</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>单独调用 B 的时候，由于 B 要求在活动的事务中被调用，因此会抛出异常，停止执行。</p>
+<p>执行 A 的话，会自动开启一个事务，在执行到 B 的时候，就会正常执行。</p>
+<h5 id="PROPAGATION-REQUIRES-NEW"><a href="#PROPAGATION-REQUIRES-NEW" class="headerlink" title="PROPAGATION_REQUIRES_NEW"></a>PROPAGATION_REQUIRES_NEW</h5><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">methodA</span><span class="params">()</span> </span>&#123; <span class="comment">// PROPAGATION_REQUIRED</span></span><br><span class="line">	<span class="comment">// some code</span></span><br><span class="line">	methodB();</span><br><span class="line">	<span class="comment">// some code</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">methodB</span><span class="params">()</span> </span>&#123; <span class="comment">// PROPAGATION_REQUIRES_NEW</span></span><br><span class="line">	<span class="comment">// some code </span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>调用方法 A 相当于</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">	TransactionManager tm = <span class="keyword">null</span>;</span><br><span class="line">	<span class="keyword">try</span> &#123;</span><br><span class="line">		tm = getTransactionManager();</span><br><span class="line">		tm.begin();</span><br><span class="line">		Transaction t1 = tm.getTransaction();</span><br><span class="line">		<span class="comment">// some code</span></span><br><span class="line">		tm.suspend();</span><br><span class="line">		<span class="keyword">try</span> &#123;</span><br><span class="line">			tm.begin(); <span class="comment">// 开启第二个事务</span></span><br><span class="line">			Transaction t2 = tm.getTransaction();</span><br><span class="line">			methodB();</span><br><span class="line">			t2.commit();</span><br><span class="line">		&#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">			t2.rollback();</span><br><span class="line">		&#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">			<span class="comment">// 释放资源</span></span><br><span class="line">		&#125;</span><br><span class="line">		tm.resume(t1); <span class="comment">// method B 执行完了之后恢复第一个事务</span></span><br><span class="line">		<span class="comment">// some code</span></span><br><span class="line">		t1.commit();</span><br><span class="line">	&#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">		t1.rollback();</span><br><span class="line">	&#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">		<span class="comment">// 释放资源</span></span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h5 id="PROPAGATION-NOT-SUPPORTED"><a href="#PROPAGATION-NOT-SUPPORTED" class="headerlink" title="PROPAGATION_NOT_SUPPORTED"></a>PROPAGATION_NOT_SUPPORTED</h5><p>表示方法总是非事务的执行，如果当前已经有事务了，那么就挂起该事务。</p>
+<h5 id="PROPAGATION-NEVER"><a href="#PROPAGATION-NEVER" class="headerlink" title="PROPAGATION_NEVER"></a>PROPAGATION_NEVER</h5><p>表示方法永远不再事务上下文中执行，如果当前有事务的，直接抛出异常。</p>
+<h5 id="PROPAGATION-NESTED"><a href="#PROPAGATION-NESTED" class="headerlink" title="PROPAGATION_NESTED"></a>PROPAGATION_NESTED</h5><p>如果一个活动的事务存在，则运行在一个嵌套的事务中. 如果没有活动事务, 则按 PROPAGATION_REQUIRED 属性执行。</p>
+<p>辨析一下 PROPAGATION_REQUIRES_NEW 和 PROPAGATION_NESTED（参照<a href="https://www.iteye.com/topic/35907" target="_blank" rel="noopener">这篇文章</a>）：</p>
+<p>PROPAGATION_REQUIRES_NEW 启动一个新的，不依赖于环境的事务，这个事务将被完全的提交或回滚，而不依赖于外部事务，拥有自己的隔离级别，自己的锁。新的事务开始执行时候，外部事务被挂起，新的事务结束后，外部事务继续执行。新的事务执行成功与否都不会引起外部事务回滚等。</p>
+<p>PROPAGATION_NESTED 开始一个嵌套的事务。这个事务是已经存在的事务的子事务。嵌套事务开始执行时候，会获取一个 save point，当嵌套事务失败，会回滚到该点。嵌套事务是外部事务的一部分，只有当外部事务结束后它才会被提交。假如外部事务对嵌套的内部事务进行了错误处理，那么内部事务的失败也不会影响到外部事物的正确提交。但是如果没有处理有关的错误，内部事务的失败也会导致外部事务同时失败。</p>
+<h4 id="隔离级别"><a href="#隔离级别" class="headerlink" title="隔离级别"></a>隔离级别</h4><p>隔离级别定义了事务的并发级别。</p>
+<blockquote>
+<p>不可重复读和幻读的区别：</p>
+<p>不可重复读重点强调修改，同样的条件，你读取过的数据，再次读取，发现不一样了。</p>
+<p>幻读强调新增和删除。同样的条件，两次读取出来记录数不同。</p>
+</blockquote>
+<table>
+<thead>
+<tr>
+<th>隔离级别</th>
+<th>效果</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ISOLATION_DEFAULT</td>
+<td>采用后端数据库默认的事务隔离级别，不额外配置</td>
+</tr>
+<tr>
+<td>ISOLATION_READ_UNCOMMITTED</td>
+<td>最低级别的隔离，允许读取未提交的数据变更</td>
+</tr>
+<tr>
+<td>ISOLATION_READ_COMMITTED</td>
+<td>允许读取并发事务已经提交的记录，可以阻止脏读</td>
+</tr>
+<tr>
+<td>ISOLATION_REPEATABLE_READ</td>
+<td>对同一字段的多次读取都是一致的，除非数据被当前事务修改</td>
+</tr>
+<tr>
+<td>ISOLATION_SERIALIZABLE</td>
+<td>最高级别的隔离，完全满足 ACID</td>
+</tr>
+</tbody>
+</table>
+<h4 id="只读"><a href="#只读" class="headerlink" title="只读"></a>只读</h4><p>第三个特性是是否为只读事务，如果事务只对后端数据库进行读操作，数据库可以利用事务的只读特性进行额外的优化。</p>
+<h4 id="事务超时"><a href="#事务超时" class="headerlink" title="事务超时"></a>事务超时</h4><p>事务超时是事务的一个定时器，在特定时间内事务如果没有执行结束，就会回滚，不必一直等到事务执行结束。防止因为一些错误长时间锁定后端数据库。</p>
+<h4 id="回滚规则"><a href="#回滚规则" class="headerlink" title="回滚规则"></a>回滚规则</h4><p>回滚规则指定了哪些情况下事务会发生回滚。默认情况下，事务遇到运行期异常会回滚，遇到编译期异常不会回滚，不过这一点是可配置的。</p>
+<h3 id="事务状态"><a href="#事务状态" class="headerlink" title="事务状态"></a>事务状态</h3><p>上述的 PlatformTransactionManager 接口的 getTransaction 方法得到 TransactionStatus 接口的一个实现，这个接口的内容：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">TransactionStatus</span> <span class="keyword">extends</span> <span class="title">SavepointManager</span>, <span class="title">Flushable</span> </span>&#123;</span><br><span class="line">	</span><br><span class="line">  <span class="function"><span class="keyword">boolean</span> <span class="title">isNewTransaction</span><span class="params">()</span></span>;</span><br><span class="line"></span><br><span class="line">	<span class="function"><span class="keyword">boolean</span> <span class="title">hasSavepoint</span><span class="params">()</span></span>;</span><br><span class="line"></span><br><span class="line">	<span class="function"><span class="keyword">void</span> <span class="title">setRollbackOnly</span><span class="params">()</span></span>; <span class="comment">// 设置为只回滚</span></span><br><span class="line"></span><br><span class="line">	<span class="function"><span class="keyword">boolean</span> <span class="title">isRollbackOnly</span><span class="params">()</span></span>;</span><br><span class="line"></span><br><span class="line">	<span class="function"><span class="keyword">void</span> <span class="title">flush</span><span class="params">()</span></span>;</span><br><span class="line"></span><br><span class="line">	<span class="function"><span class="keyword">boolean</span> <span class="title">isCompleted</span><span class="params">()</span></span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>描述一些处理事务提供简单的控制事务执行和查询事务状态的方法，在回滚或者提交时候需要引用对应的事务状态。</p>
+<h2 id="编程式事务-amp-声明式事务"><a href="#编程式事务-amp-声明式事务" class="headerlink" title="编程式事务 &amp; 声明式事务"></a>编程式事务 &amp; 声明式事务</h2><p>Spring 提供了对编程式事务和声明式事务的支持。编程式事务允许用户在代码中精确定义事务的边界，而声明式事务（基于 AOP）有助于用户将操作和事务规则解耦。具体的实现可以参照文章开头提到的博客。</p>
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><ol>
+<li><a href="https://blog.csdn.net/trigl/article/details/50968079" target="_blank" rel="noopener">Spring事务管理（详解+实例）</a></li>
+<li><a href="https://www.iteye.com/topic/35907" target="_blank" rel="noopener">解惑 spring 嵌套事务 </a></li>
+<li><a href="https://www.open-open.com/lib/view/open1350865116821.html" target="_blank" rel="noopener">Spring事务机制详解</a></li>
+</ol>
+</section>
+    <!-- Tags START -->
+    
+      <div class="tags">
+        <span>Tags:</span>
+        
+  <a href="/tags#Spring">
+    <span class="tag-code">Spring</span>
+  </a>
+
+      </div>
+    
+    <!-- Tags END -->
+    <!-- NAV START -->
+    
+  <div class="nav-container">
+    <!-- reverse left and right to put prev and next in a more logic postition -->
+    
+      <a class="nav-left" href="/2019/04/12/Java中的资源访问/">
+        <span class="nav-arrow">← </span>
+        
+          Java中的资源访问问题
+        
+      </a>
+    
+    
+  </div>
+
+    <!-- NAV END -->
+    <!-- 打赏 START -->
+    
+    <!-- 打赏 END -->
+    <!-- 二维码 START -->
+    
+      <div class="qrcode">
+        <canvas id="share-qrcode"></canvas>
+        <p class="notice">扫描二维码，分享此文章</p>
+      </div>
+    
+    <!-- 二维码 END -->
+    
+      <!-- No Comment -->
+    
+  </article>
+  <!-- Article END -->
+  <!-- Catalog START -->
+  
+    <aside class="catalog-container">
+  <div class="toc-main">
+    <strong class="toc-title">Catalog</strong>
+    
+      <ol class="toc-nav"><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#核心接口"><span class="toc-nav-text">核心接口</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#事务管理器"><span class="toc-nav-text">事务管理器</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#基本事务属性"><span class="toc-nav-text">基本事务属性</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-4"><a class="toc-nav-link" href="#传播行为"><span class="toc-nav-text">传播行为</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-5"><a class="toc-nav-link" href="#PROPAGATION-REQUIRED"><span class="toc-nav-text">PROPAGATION_REQUIRED</span></a></li><li class="toc-nav-item toc-nav-level-5"><a class="toc-nav-link" href="#PROPAGATION-SUPPORTS"><span class="toc-nav-text">PROPAGATION_SUPPORTS</span></a></li><li class="toc-nav-item toc-nav-level-5"><a class="toc-nav-link" href="#PROPAGATION-MANDATORY"><span class="toc-nav-text">PROPAGATION_MANDATORY</span></a></li><li class="toc-nav-item toc-nav-level-5"><a class="toc-nav-link" href="#PROPAGATION-REQUIRES-NEW"><span class="toc-nav-text">PROPAGATION_REQUIRES_NEW</span></a></li><li class="toc-nav-item toc-nav-level-5"><a class="toc-nav-link" href="#PROPAGATION-NOT-SUPPORTED"><span class="toc-nav-text">PROPAGATION_NOT_SUPPORTED</span></a></li><li class="toc-nav-item toc-nav-level-5"><a class="toc-nav-link" href="#PROPAGATION-NEVER"><span class="toc-nav-text">PROPAGATION_NEVER</span></a></li><li class="toc-nav-item toc-nav-level-5"><a class="toc-nav-link" href="#PROPAGATION-NESTED"><span class="toc-nav-text">PROPAGATION_NESTED</span></a></li></ol></li><li class="toc-nav-item toc-nav-level-4"><a class="toc-nav-link" href="#隔离级别"><span class="toc-nav-text">隔离级别</span></a></li><li class="toc-nav-item toc-nav-level-4"><a class="toc-nav-link" href="#只读"><span class="toc-nav-text">只读</span></a></li><li class="toc-nav-item toc-nav-level-4"><a class="toc-nav-link" href="#事务超时"><span class="toc-nav-text">事务超时</span></a></li><li class="toc-nav-item toc-nav-level-4"><a class="toc-nav-link" href="#回滚规则"><span class="toc-nav-text">回滚规则</span></a></li></ol></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#事务状态"><span class="toc-nav-text">事务状态</span></a></li></ol></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#编程式事务-amp-声明式事务"><span class="toc-nav-text">编程式事务 &amp; 声明式事务</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#参考"><span class="toc-nav-text">参考</span></a></li></ol>
+    
+  </div>
+</aside>
+  
+  <!-- Catalog END -->
+</main>
+
+<script>
+  (function () {
+    var url = 'http://yoursite.com/2019/04/13/Spring事务管理/';
+    var banner = ''
+    if (banner !== '' && banner !== 'undefined' && banner !== 'null') {
+      $('#article-banner').css({
+        'background-image': 'url(' + banner + ')'
+      })
+    } else {
+      $('#article-banner').geopattern(url)
+    }
+    $('.header').removeClass('fixed-header')
+
+    // error image
+    $(".markdown-content img").on('error', function() {
+      $(this).attr('src', 'http://file.muyutech.com/error-img.png')
+      $(this).css({
+        'cursor': 'default'
+      })
+    })
+
+    // zoom image
+    $(".markdown-content img").on('click', function() {
+      var src = $(this).attr('src')
+      if (src !== 'http://file.muyutech.com/error-img.png') {
+        var imageW = $(this).width()
+        var imageH = $(this).height()
+
+        var zoom = ($(window).width() * 0.95 / imageW).toFixed(2)
+        zoom = zoom < 1 ? 1 : zoom
+        zoom = zoom > 2 ? 2 : zoom
+        var transY = (($(window).height() - imageH) / 2).toFixed(2)
+
+        $('body').append('<div class="image-view-wrap"><div class="image-view-inner"><img src="'+ src +'" /></div></div>')
+        $('.image-view-wrap').addClass('wrap-active')
+        $('.image-view-wrap img').css({
+          'width': `${imageW}`,
+          'transform': `translate3d(0, ${transY}px, 0) scale3d(${zoom}, ${zoom}, 1)`
+        })
+        $('html').css('overflow', 'hidden')
+
+        $('.image-view-wrap').on('click', function() {
+          $(this).remove()
+          $('html').attr('style', '')
+        })
+      }
+    })
+  })();
+</script>
+
+
+  <script>
+    var qr = new QRious({
+      element: document.getElementById('share-qrcode'),
+      value: document.location.href
+    });
+  </script>
+
+
+
+
+
+
+    <div class="scroll-top">
+  <span class="arrow-icon"></span>
+</div>
+    <footer class="app-footer">
+  <p class="copyright">
+    &copy; 2019 | Proudly powered by <a href="https://hexo.io" target="_blank">Hexo</a>
+    <br>
+    Theme by <a href="https://github.com/yanm1ng">yanm1ng</a>
+  </p>
+</footer>
+
+<script>
+  function async(u, c) {
+    var d = document, t = 'script',
+      o = d.createElement(t),
+      s = d.getElementsByTagName(t)[0];
+    o.src = u;
+    if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+    s.parentNode.insertBefore(o, s);
+  }
+</script>
+<script>
+  async("//cdnjs.cloudflare.com/ajax/libs/fastclick/1.0.6/fastclick.min.js", function(){
+    FastClick.attach(document.body);
+  })
+</script>
+
+<script>
+  var hasLine = 'true';
+  async("//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js", function(){
+    $('figure pre').each(function(i, block) {
+      var figure = $(this).parents('figure');
+      if (hasLine === 'false') {
+        figure.find('.gutter').hide();
+      }
+      var lang = figure.attr('class').split(' ')[1] || 'code';
+      var codeHtml = $(this).html();
+      var codeTag = document.createElement('code');
+      codeTag.className = lang;
+      codeTag.innerHTML = codeHtml;
+      $(this).attr('class', '').empty().html(codeTag);
+      figure.attr('data-lang', lang.toUpperCase());
+      hljs.highlightBlock(block);
+    });
+  })
+</script>
+<!-- Baidu Tongji -->
+
+<script src="/js/script.js"></script>
+  </body>
+</html>
