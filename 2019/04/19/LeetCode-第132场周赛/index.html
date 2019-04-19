@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html>
+  <head><meta name="generator" content="Hexo 3.8.0">
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+  <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport">
+  <meta name="description" content="iznauy&#39;s blog">
+  <meta name="keyword" content="hexo-theme, vuejs">
+  
+    <link rel="shortcut icon" href="/css/images/logo.png">
+  
+  <title>
+    
+      LeetCode 第132场周赛 | Hexo
+    
+  </title>
+  <link href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+  <link href="//cdnjs.cloudflare.com/ajax/libs/nprogress/0.2.0/nprogress.min.css" rel="stylesheet">
+  <link href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/tomorrow.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="/css/style.css">
+  
+  <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/geopattern/1.2.3/js/geopattern.min.js"></script>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/nprogress/0.2.0/nprogress.min.js"></script>
+  
+    <script src="/js/qrious.js"></script>
+  
+  
+  
+  
+    <!-- MathJax support START -->
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+      });
+    </script>
+
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+      });
+    </script>
+    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <!-- MathJax support END -->
+  
+
+
+</head>
+<div class="wechat-share">
+  <img src="/css/images/logo.png">
+</div>
+
+  <body>
+    <header class="header fixed-header">
+  <div class="header-container">
+    <a class="home-link" href="/">
+      <div class="logo"></div>
+      <span>Hexo</span>
+    </a>
+    <ul class="right-list">
+      
+        <li class="list-item">
+          
+            <a href="/" class="item-link">Home</a>
+          
+        </li>
+      
+        <li class="list-item">
+          
+            <a href="/tags/" class="item-link">Tags</a>
+          
+        </li>
+      
+        <li class="list-item">
+          
+            <a href="/archives/" class="item-link">Archives</a>
+          
+        </li>
+      
+        <li class="list-item">
+          
+            <a href="/project/" class="item-link">Projects</a>
+          
+        </li>
+      
+        <li class="list-item">
+          
+            <a href="/about/" class="item-link">About</a>
+          
+        </li>
+      
+    </ul>
+    <div class="menu">
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+    </div>
+    <div class="menu-mask">
+      <ul class="menu-list">
+        
+          <li class="menu-item">
+            
+              <a href="/" class="menu-link">Home</a>
+            
+          </li>
+        
+          <li class="menu-item">
+            
+              <a href="/tags/" class="menu-link">Tags</a>
+            
+          </li>
+        
+          <li class="menu-item">
+            
+              <a href="/archives/" class="menu-link">Archives</a>
+            
+          </li>
+        
+          <li class="menu-item">
+            
+              <a href="/project/" class="menu-link">Projects</a>
+            
+          </li>
+        
+          <li class="menu-item">
+            
+              <a href="/about/" class="menu-link">About</a>
+            
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</header>
+
+    <div id="article-banner">
+  <h2>LeetCode 第132场周赛</h2>
+  <p class="post-date">2019-04-19</p>
+  <div class="arrow-down">
+    <a href="javascript:;"></a>
+  </div>
+</div>
+<main class="app-body flex-box">
+  <!-- Article START -->
+  <article class="post-article">
+    <section class="markdown-content"><h3 id="除数博弈"><a href="#除数博弈" class="headerlink" title="除数博弈"></a>除数博弈</h3><h4 id="题目描述"><a href="#题目描述" class="headerlink" title="题目描述"></a>题目描述</h4><p>爱丽丝和鲍勃一起玩游戏，他们轮流行动。爱丽丝先手开局。</p>
+<p>最初，黑板上有一个数字 <code>N</code> 。在每个玩家的回合，玩家需要执行以下操作：</p>
+<ul>
+<li>选出任一 <code>x</code>，满足 <code>0 &lt; x &lt; N</code> 且 <code>N % x == 0</code> 。</li>
+<li>用 <code>N - x</code> 替换黑板上的数字 <code>N</code> 。</li>
+</ul>
+<p>如果玩家无法执行这些操作，就会输掉游戏。</p>
+<p>只有在爱丽丝在游戏中取得胜利时才返回 <code>True</code>，否则返回 <code>false</code>。假设两个玩家都以最佳状态参与游戏。</p>
+<p> <strong>示例 1：</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">输入：2</span><br><span class="line">输出：true</span><br><span class="line">解释：爱丽丝选择 1，鲍勃无法进行操作。</span><br></pre></td></tr></table></figure>
+<p><strong>示例 2：</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">输入：3</span><br><span class="line">输出：false</span><br><span class="line">解释：爱丽丝选择 1，鲍勃也选择 1，然后爱丽丝无法进行操作。</span><br></pre></td></tr></table></figure>
+<p><strong>提示：</strong></p>
+<ol>
+<li><code>1 &lt;= N &lt;= 1000</code></li>
+</ol>
+<h4 id="思路"><a href="#思路" class="headerlink" title="思路"></a>思路</h4><p>可以使用动态规范的方式。</p>
+<p><code>N</code>能否胜利取决于<code>N-factor</code>，假如存在一个<code>factor</code>，如果<code>N-factor</code>时候爱丽丝无法取胜，那么爱丽丝可以选择<code>factor</code>，这样对手无法取胜，自己可以取得胜利。如果不存在这样的<code>factor</code>，则爱丽丝选择任何数都无法取胜。</p>
+<h4 id="代码"><a href="#代码" class="headerlink" title="代码"></a>代码</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">P1025</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">divisorGame</span><span class="params">(<span class="keyword">int</span> N)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">boolean</span>[] winArray = <span class="keyword">new</span> <span class="keyword">boolean</span>[N + <span class="number">1</span>];</span><br><span class="line">        winArray[<span class="number">1</span>] = <span class="keyword">false</span>;</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">2</span>; i &lt;= N; i++) &#123;</span><br><span class="line">            <span class="keyword">if</span> (!winArray[i - <span class="number">1</span>]) &#123;</span><br><span class="line">                winArray[i] = <span class="keyword">true</span>;</span><br><span class="line">            &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                <span class="keyword">for</span> (<span class="keyword">int</span> j = <span class="number">2</span>; j * j &lt;= i; j++) &#123;</span><br><span class="line">                    <span class="keyword">if</span> (N % j == <span class="number">0</span>) &#123;</span><br><span class="line">                        <span class="keyword">int</span> factor1 = j, factor2 = N / j;</span><br><span class="line">                        <span class="keyword">if</span> (!winArray[N - factor1] || !winArray[N - factor2]) &#123;</span><br><span class="line">                            winArray[i] = <span class="keyword">true</span>;</span><br><span class="line">                            <span class="keyword">break</span>;</span><br><span class="line">                        &#125;</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">                winArray[i] = <span class="keyword">false</span>;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> winArray[N];</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="扩展"><a href="#扩展" class="headerlink" title="扩展"></a>扩展</h4><p>其实上述方法并不是最优的。</p>
+<p>其实可以证明出来该问题有通项公式。</p>
+<p>证明有点类似于巴什博奕：</p>
+<blockquote>
+<h5 id="巴什博奕"><a href="#巴什博奕" class="headerlink" title="巴什博奕"></a>巴什博奕</h5><blockquote>
+<p>两个聪明人玩游戏，有n个石子，每人可以随便拿1~m个石子，谁拿空谁就获胜。问谁会胜利？</p>
+</blockquote>
+<h5 id="分析"><a href="#分析" class="headerlink" title="分析"></a>分析</h5><p>假如石子有1~m个，那么先手必胜。</p>
+<p>假如石子有m+1个，先手无论拿多少，后手都可以拿完，先手必败。</p>
+<p>假如石子有m+2~2m个，先手可以拿剩下m+1个，先手必胜。</p>
+<p>使用数学归纳法：</p>
+<ul>
+<li>当石子的数量为 n = k * (m + 1) + r（r &gt; 0 &amp;&amp; r &lt; m + 1），先手会拿走r个，假如后手拿走x个，先手会拿走m + 1 - x个，先手必胜。</li>
+<li>当石子的数量为n = k * (m + 1)时候，同理可知先手必败。</li>
+</ul>
+</blockquote>
+<p>最终，当<code>N</code>是偶数时候，结果是<code>true</code>，否则为<code>false</code>。</p>
+<h3 id="节点与其祖先之间的最大差值"><a href="#节点与其祖先之间的最大差值" class="headerlink" title="节点与其祖先之间的最大差值"></a>节点与其祖先之间的最大差值</h3><h4 id="题目描述-1"><a href="#题目描述-1" class="headerlink" title="题目描述"></a>题目描述</h4><p>给定二叉树的根节点 <code>root</code>，找出存在于不同节点 <code>A</code> 和 <code>B</code> 之间的最大值 <code>V</code>，其中 <code>V = |A.val - B.val|</code>，且 <code>A</code> 是 <code>B</code> 的祖先。</p>
+<p>（如果 A 的任何子节点之一为 B，或者 A 的任何子节点是 B 的祖先，那么我们认为 A 是 B 的祖先）</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">输入：[8,3,10,1,6,null,14,null,null,4,7,13]</span><br><span class="line">输出：7</span><br><span class="line">解释： </span><br><span class="line">我们有大量的节点与其祖先的差值，其中一些如下：</span><br><span class="line">|8 - 3| = 5</span><br><span class="line">|3 - 7| = 4</span><br><span class="line">|8 - 1| = 7</span><br><span class="line">|10 - 13| = 3</span><br><span class="line">在所有可能的差值中，最大值 7 由 |8 - 1| = 7 得出。</span><br></pre></td></tr></table></figure>
+<p><strong>提示：</strong></p>
+<ol>
+<li>树中的节点数在 <code>2</code> 到 <code>5000</code> 之间。</li>
+<li>每个节点的值介于 <code>0</code> 到 <code>100000</code> 之间。</li>
+</ol>
+<h4 id="思路-1"><a href="#思路-1" class="headerlink" title="思路"></a>思路</h4><p>直接递归去做就可以了。</p>
+<h4 id="代码-1"><a href="#代码-1" class="headerlink" title="代码"></a>代码</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">P1026</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">TreeNode</span> </span>&#123;</span><br><span class="line">        <span class="keyword">int</span> val;</span><br><span class="line">        TreeNode left;</span><br><span class="line">        TreeNode right;</span><br><span class="line">        TreeNode(<span class="keyword">int</span> x) &#123; val = x; &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">maxAncestorDiff</span><span class="params">(TreeNode root)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (root == <span class="keyword">null</span>)</span><br><span class="line">            <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">return</span> minMax(root)[<span class="number">2</span>];</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">int</span>[] minMax(TreeNode root) &#123;</span><br><span class="line">        <span class="keyword">int</span>[] arr = <span class="keyword">new</span> <span class="keyword">int</span>[<span class="number">3</span>];</span><br><span class="line">        arr[<span class="number">0</span>] = arr[<span class="number">1</span>] = root.val;</span><br><span class="line">        arr[<span class="number">2</span>] = <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">if</span> (root.left != <span class="keyword">null</span>) &#123;</span><br><span class="line">            <span class="keyword">int</span>[] leftArr = minMax(root.left);</span><br><span class="line">            arr[<span class="number">0</span>] = Math.min(arr[<span class="number">0</span>], leftArr[<span class="number">0</span>]);</span><br><span class="line">            arr[<span class="number">1</span>] = Math.max(arr[<span class="number">1</span>], leftArr[<span class="number">1</span>]);</span><br><span class="line">            <span class="keyword">int</span> maxDiff = Math.max(Math.abs(root.val - arr[<span class="number">0</span>]), Math.abs(root.val - arr[<span class="number">1</span>]));</span><br><span class="line">            arr[<span class="number">2</span>] = Math.max(maxDiff, leftArr[<span class="number">2</span>]);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">if</span> (root.right != <span class="keyword">null</span>) &#123;</span><br><span class="line">            <span class="keyword">int</span>[] rightArr = minMax(root.right);</span><br><span class="line">            arr[<span class="number">0</span>] = Math.min(arr[<span class="number">0</span>], rightArr[<span class="number">0</span>]);</span><br><span class="line">            arr[<span class="number">1</span>] = Math.max(arr[<span class="number">1</span>], rightArr[<span class="number">1</span>]);</span><br><span class="line">            <span class="keyword">int</span> maxDiff = Math.max(Math.abs(root.val - arr[<span class="number">0</span>]), Math.abs(root.val - arr[<span class="number">1</span>]));</span><br><span class="line">            arr[<span class="number">2</span>] = Math.max(arr[<span class="number">2</span>], Math.max(maxDiff, rightArr[<span class="number">2</span>]));</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> arr;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="最长等差数列"><a href="#最长等差数列" class="headerlink" title="最长等差数列"></a>最长等差数列</h3><p>给定一个整数数组 <code>A</code>，返回 <code>A</code> 中最长等差子序列的<strong>长度</strong>。</p>
+<p>回想一下，<code>A</code> 的子序列是列表 <code>A[i_1], A[i_2], ..., A[i_k]</code> 其中 <code>0 &lt;= i_1 &lt; i_2 &lt; ... &lt; i_k &lt;= A.length - 1</code>。并且如果 <code>B[i+1] - B[i]</code>( <code>0 &lt;= i &lt; B.length - 1</code>) 的值都相同，那么序列 <code>B</code> 是等差的。</p>
+<p><strong>示例 1：</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">输入：[3,6,9,12]</span><br><span class="line">输出：4</span><br><span class="line">解释： </span><br><span class="line">整个数组是公差为 3 的等差数列。</span><br></pre></td></tr></table></figure>
+<p><strong>示例 2：</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">输入：[9,4,7,2,10]</span><br><span class="line">输出：3</span><br><span class="line">解释：</span><br><span class="line">最长的等差子序列是 [4,7,10]。</span><br></pre></td></tr></table></figure>
+<p><strong>示例 3：</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">输入：[20,1,15,3,10,5,8]</span><br><span class="line">输出：4</span><br><span class="line">解释：</span><br><span class="line">最长的等差子序列是 [20,15,10,5]。</span><br></pre></td></tr></table></figure>
+<p><strong>提示：</strong></p>
+<ol>
+<li><code>2 &lt;= A.length &lt;= 2000</code></li>
+<li><code>0 &lt;= A[i] &lt;= 10000</code></li>
+</ol>
+<h4 id="思路-2"><a href="#思路-2" class="headerlink" title="思路"></a>思路</h4><p>暴力搜索，时间复杂度<code>O(n^2)</code>。使用<code>Map</code>来存储第<code>i</code>个数当前的关于不同的差的序列长度。最坏空间复杂度也是<code>O(n^2)</code>。我直接开了一个很大的数组，来代替二维的<code>Map</code>。</p>
+<h4 id="代码-2"><a href="#代码-2" class="headerlink" title="代码"></a>代码</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">P1027</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> BASE = <span class="number">10000</span>;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">longestArithSeqLength</span><span class="params">(<span class="keyword">int</span>[] A)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">int</span> length = A.length;</span><br><span class="line">        <span class="keyword">int</span> longestLength = <span class="number">1</span>;</span><br><span class="line">        <span class="keyword">int</span>[][] matrix = <span class="keyword">new</span> <span class="keyword">int</span>[length][<span class="number">20002</span>];</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">1</span>; i &lt; length; i++) &#123;</span><br><span class="line">            <span class="keyword">for</span> (<span class="keyword">int</span> j = <span class="number">0</span>; j &lt; i; j++) &#123;</span><br><span class="line">                <span class="keyword">int</span> diff = A[i] - A[j]; </span><br><span class="line">                matrix[i][BASE + diff] = Math.max(matrix[i][BASE + diff], matrix[j][BASE + diff] + <span class="number">1</span>);</span><br><span class="line">                <span class="keyword">if</span> (matrix[i][BASE + diff] &gt; longestLength)</span><br><span class="line">                    longestLength = matrix[i][BASE + diff];</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> longestLength + <span class="number">1</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="从先序遍历还原二叉树"><a href="#从先序遍历还原二叉树" class="headerlink" title="从先序遍历还原二叉树"></a>从先序遍历还原二叉树</h3><h4 id="题目描述-2"><a href="#题目描述-2" class="headerlink" title="题目描述"></a>题目描述</h4><p>我们从二叉树的根节点 <code>root</code> 开始进行深度优先搜索。</p>
+<p>在遍历中的每个节点处，我们输出 <code>D</code> 条短划线（其中 <code>D</code> 是该节点的深度），然后输出该节点的值。（<em>如果节点的深度为 D，则其直接子节点的深度为 D + 1。根节点的深度为 0）。</em></p>
+<p>如果节点只有一个子节点，那么保证该子节点为左子节点。</p>
+<p>给出遍历输出 <code>S</code>，还原树并返回其根节点 <code>root</code>。</p>
+<p><strong>示例 1：</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">输入：&quot;1-2--3--4-5--6--7&quot;</span><br><span class="line">输出：[1,2,5,3,4,6,7]</span><br></pre></td></tr></table></figure>
+<p><strong>示例 2：</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">输入：&quot;1-2--3---4-5--6---7&quot;</span><br><span class="line">输出：[1,2,5,3,null,6,null,4,null,7]</span><br></pre></td></tr></table></figure>
+<p><strong>示例 3：</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">输入：&quot;1-401--349---90--88&quot;</span><br><span class="line">输出：[1,401,null,349,88,90]</span><br></pre></td></tr></table></figure>
+<p>（其实有图的，不过懒得放了）</p>
+<h4 id="思路-3"><a href="#思路-3" class="headerlink" title="思路"></a>思路</h4><p>一般和二叉树有关的问题，都很适合用栈来解决（递归也是在使用栈）。这个题扫描字符，然后用栈来存储当前路径。栈底元素就是根节点。</p>
+<h4 id="代码-3"><a href="#代码-3" class="headerlink" title="代码"></a>代码</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">P1028</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">TreeNode</span> </span>&#123;</span><br><span class="line">        <span class="keyword">int</span> val;</span><br><span class="line">        TreeNode left;</span><br><span class="line">        TreeNode right;</span><br><span class="line">        TreeNode(<span class="keyword">int</span> x) &#123; val = x; &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> TreeNode <span class="title">recoverFromPreorder</span><span class="params">(String S)</span> </span>&#123;</span><br><span class="line">        Stack&lt;TreeNode&gt; stack = <span class="keyword">new</span> Stack&lt;&gt;();</span><br><span class="line">        TreeNode result = <span class="keyword">null</span>;</span><br><span class="line">        <span class="keyword">char</span>[] array = S.toCharArray();</span><br><span class="line">        <span class="keyword">int</span> i = <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">while</span> (i &lt; S.length()) &#123;</span><br><span class="line">            <span class="keyword">int</span> level = <span class="number">0</span>;</span><br><span class="line">            <span class="keyword">while</span> (array[i + level] == <span class="string">'-'</span>)</span><br><span class="line">                level++;</span><br><span class="line">            i += level;</span><br><span class="line">            <span class="keyword">int</span> num;</span><br><span class="line">            StringBuilder sb = <span class="keyword">new</span> StringBuilder();</span><br><span class="line">            <span class="keyword">while</span> (i &lt; S.length() &amp;&amp; array[i] != <span class="string">'-'</span>) &#123;</span><br><span class="line">                sb.append(array[i]);</span><br><span class="line">                i++;</span><br><span class="line">            &#125;</span><br><span class="line">            num = Integer.valueOf(sb.toString());</span><br><span class="line">            TreeNode newNode = <span class="keyword">new</span> TreeNode(num);</span><br><span class="line"></span><br><span class="line">            <span class="keyword">while</span> (stack.size() &gt; level)</span><br><span class="line">                stack.pop();</span><br><span class="line"></span><br><span class="line">            <span class="keyword">if</span> (!stack.isEmpty()) &#123;</span><br><span class="line">                TreeNode parent = stack.peek();</span><br><span class="line">                <span class="keyword">if</span> (parent.left == <span class="keyword">null</span>)</span><br><span class="line">                    parent.left = newNode;</span><br><span class="line">                <span class="keyword">else</span></span><br><span class="line">                    parent.right = newNode;</span><br><span class="line">            &#125; <span class="keyword">else</span></span><br><span class="line">                result = newNode;</span><br><span class="line">            stack.push(newNode);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> result;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</section>
+    <!-- Tags START -->
+    
+      <div class="tags">
+        <span>Tags:</span>
+        
+  <a href="/tags#算法">
+    <span class="tag-code">算法</span>
+  </a>
+
+      </div>
+    
+    <!-- Tags END -->
+    <!-- NAV START -->
+    
+  <div class="nav-container">
+    <!-- reverse left and right to put prev and next in a more logic postition -->
+    
+      <a class="nav-left" href="/2019/04/18/Floyd-判圈算法/">
+        <span class="nav-arrow">← </span>
+        
+          Floyd 判圈算法
+        
+      </a>
+    
+    
+  </div>
+
+    <!-- NAV END -->
+    <!-- 打赏 START -->
+    
+    <!-- 打赏 END -->
+    <!-- 二维码 START -->
+    
+      <div class="qrcode">
+        <canvas id="share-qrcode"></canvas>
+        <p class="notice">扫描二维码，分享此文章</p>
+      </div>
+    
+    <!-- 二维码 END -->
+    
+      <!-- No Comment -->
+    
+  </article>
+  <!-- Article END -->
+  <!-- Catalog START -->
+  
+    <aside class="catalog-container">
+  <div class="toc-main">
+    <strong class="toc-title">Catalog</strong>
+    
+      <ol class="toc-nav"><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#除数博弈"><span class="toc-nav-text">除数博弈</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-4"><a class="toc-nav-link" href="#题目描述"><span class="toc-nav-text">题目描述</span></a></li><li class="toc-nav-item toc-nav-level-4"><a class="toc-nav-link" href="#思路"><span class="toc-nav-text">思路</span></a></li><li class="toc-nav-item toc-nav-level-4"><a class="toc-nav-link" href="#代码"><span class="toc-nav-text">代码</span></a></li><li class="toc-nav-item toc-nav-level-4"><a class="toc-nav-link" href="#扩展"><span class="toc-nav-text">扩展</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-5"><a class="toc-nav-link" href="#巴什博奕"><span class="toc-nav-text">巴什博奕</span></a></li><li class="toc-nav-item toc-nav-level-5"><a class="toc-nav-link" href="#分析"><span class="toc-nav-text">分析</span></a></li></ol></li></ol></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#节点与其祖先之间的最大差值"><span class="toc-nav-text">节点与其祖先之间的最大差值</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-4"><a class="toc-nav-link" href="#题目描述-1"><span class="toc-nav-text">题目描述</span></a></li><li class="toc-nav-item toc-nav-level-4"><a class="toc-nav-link" href="#思路-1"><span class="toc-nav-text">思路</span></a></li><li class="toc-nav-item toc-nav-level-4"><a class="toc-nav-link" href="#代码-1"><span class="toc-nav-text">代码</span></a></li></ol></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#最长等差数列"><span class="toc-nav-text">最长等差数列</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-4"><a class="toc-nav-link" href="#思路-2"><span class="toc-nav-text">思路</span></a></li><li class="toc-nav-item toc-nav-level-4"><a class="toc-nav-link" href="#代码-2"><span class="toc-nav-text">代码</span></a></li></ol></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#从先序遍历还原二叉树"><span class="toc-nav-text">从先序遍历还原二叉树</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-4"><a class="toc-nav-link" href="#题目描述-2"><span class="toc-nav-text">题目描述</span></a></li><li class="toc-nav-item toc-nav-level-4"><a class="toc-nav-link" href="#思路-3"><span class="toc-nav-text">思路</span></a></li><li class="toc-nav-item toc-nav-level-4"><a class="toc-nav-link" href="#代码-3"><span class="toc-nav-text">代码</span></a></li></ol></li></ol>
+    
+  </div>
+</aside>
+  
+  <!-- Catalog END -->
+</main>
+
+<script>
+  (function () {
+    var url = 'http://yoursite.com/2019/04/19/LeetCode-第132场周赛/';
+    var banner = ''
+    if (banner !== '' && banner !== 'undefined' && banner !== 'null') {
+      $('#article-banner').css({
+        'background-image': 'url(' + banner + ')'
+      })
+    } else {
+      $('#article-banner').geopattern(url)
+    }
+    $('.header').removeClass('fixed-header')
+
+    // error image
+    $(".markdown-content img").on('error', function() {
+      $(this).attr('src', 'http://file.muyutech.com/error-img.png')
+      $(this).css({
+        'cursor': 'default'
+      })
+    })
+
+    // zoom image
+    $(".markdown-content img").on('click', function() {
+      var src = $(this).attr('src')
+      if (src !== 'http://file.muyutech.com/error-img.png') {
+        var imageW = $(this).width()
+        var imageH = $(this).height()
+
+        var zoom = ($(window).width() * 0.95 / imageW).toFixed(2)
+        zoom = zoom < 1 ? 1 : zoom
+        zoom = zoom > 2 ? 2 : zoom
+        var transY = (($(window).height() - imageH) / 2).toFixed(2)
+
+        $('body').append('<div class="image-view-wrap"><div class="image-view-inner"><img src="'+ src +'" /></div></div>')
+        $('.image-view-wrap').addClass('wrap-active')
+        $('.image-view-wrap img').css({
+          'width': `${imageW}`,
+          'transform': `translate3d(0, ${transY}px, 0) scale3d(${zoom}, ${zoom}, 1)`
+        })
+        $('html').css('overflow', 'hidden')
+
+        $('.image-view-wrap').on('click', function() {
+          $(this).remove()
+          $('html').attr('style', '')
+        })
+      }
+    })
+  })();
+</script>
+
+
+  <script>
+    var qr = new QRious({
+      element: document.getElementById('share-qrcode'),
+      value: document.location.href
+    });
+  </script>
+
+
+
+
+
+
+    <div class="scroll-top">
+  <span class="arrow-icon"></span>
+</div>
+    <footer class="app-footer">
+  <p class="copyright">
+    &copy; 2019 | Proudly powered by <a href="https://hexo.io" target="_blank">Hexo</a>
+    <br>
+    Theme by <a href="https://github.com/yanm1ng">yanm1ng</a>
+  </p>
+</footer>
+
+<script>
+  function async(u, c) {
+    var d = document, t = 'script',
+      o = d.createElement(t),
+      s = d.getElementsByTagName(t)[0];
+    o.src = u;
+    if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+    s.parentNode.insertBefore(o, s);
+  }
+</script>
+<script>
+  async("//cdnjs.cloudflare.com/ajax/libs/fastclick/1.0.6/fastclick.min.js", function(){
+    FastClick.attach(document.body);
+  })
+</script>
+
+<script>
+  var hasLine = 'true';
+  async("//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js", function(){
+    $('figure pre').each(function(i, block) {
+      var figure = $(this).parents('figure');
+      if (hasLine === 'false') {
+        figure.find('.gutter').hide();
+      }
+      var lang = figure.attr('class').split(' ')[1] || 'code';
+      var codeHtml = $(this).html();
+      var codeTag = document.createElement('code');
+      codeTag.className = lang;
+      codeTag.innerHTML = codeHtml;
+      $(this).attr('class', '').empty().html(codeTag);
+      figure.attr('data-lang', lang.toUpperCase());
+      hljs.highlightBlock(block);
+    });
+  })
+</script>
+<!-- Baidu Tongji -->
+
+<script src="/js/script.js"></script>
+  </body>
+</html>
