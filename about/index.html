@@ -139,70 +139,39 @@
   </div>
 </header>
 
-    <div id="about-banner" style="background-image: url(<%- theme.about.banner %>)"></div>
+    <div id="about-banner" style="background-image: url(http://file.muyutech.com/about.jpg)"></div>
 <div class="author">
   <div class="head">
-    <img src="<%- theme.about.avatar %>" />
+    <img src="https://avatars0.githubusercontent.com/u/22297856?s=400&u=9ac5d0437ef685b62e402ed130d67d589d234f0b&v=4">
   </div>
-  <h3><%- config.author %></h3>
-  <% if (typeof(theme.about.description) === 'object') { %>
-    <% for (var i in theme.about.description) { %>
-      <p class="description">
-        <%- theme.about.description[i] %>
-      </p>
-    <% } %>
-  <% } else { %>
-    <p class="description"><%- theme.about.description %></p>
-  <% } %>
+  <h3>iznauy</h3>
+  
+    <p class="description">生活不易，且行且珍惜</p>
+  
   <section class="share-icons">
-    <% if (theme.about.weibo_username) { %>
-      <a class="icon-weibo" href="http://weibo.com/<%- theme.about.weibo_username %>" target="_blank">
-        <span class="fa-stack fa-lg">
-          <i class="fa fa-circle fa-stack-2x"></i>
-          <i class="fa fa-weibo fa-stack-1x fa-inverse"></i>
-        </span>
-      </a>
-    <% } %>
-    <% if (theme.about.twitter_username) { %>
-      <a class="icon-twitter" href="https://twitter.com/<%- theme.about.twitter_username %>" target="_blank">
-        <span class="fa-stack fa-lg">
-          <i class="fa fa-circle fa-stack-2x"></i>
-          <i class="fa fa-twitter fa-stack-1x fa-inverse"></i>
-        </span>
-      </a>
-    <% } %>
-    <% if (theme.about.github_username) { %>
-      <a class="icon-github" href="https://github.com/<%- theme.about.github_username %>" target="_blank">
+    
+    
+    
+      <a class="icon-github" href="https://github.com/iznauy" target="_blank">
         <span class="fa-stack fa-lg">
           <i class="fa fa-circle fa-stack-2x"></i>
           <i class="fa fa-github fa-stack-1x fa-inverse"></i>
         </span>
       </a>
-    <% } %>
-    <% if (theme.about.linkedin_username) { %>
-      <a class="icon-linkedin" href="https://www.linkedin.com/in/<%- theme.about.linkedin_username %>" target="_blank">
-        <span class="fa-stack fa-lg">
-          <i class="fa fa-circle fa-stack-2x"></i>
-          <i class="fa fa-linkedin fa-stack-1x fa-inverse"></i>
-        </span>
-      </a>
-    <% } %>
-    <% if (theme.about.zhihu_username) { %>
-      <a class="icon-zhihu" href="https://www.zhihu.com/people/<%- theme.about.zhihu_username %>" target="_blank">
+    
+    
+    
+      <a class="icon-zhihu" href="https://www.zhihu.com/people/leng-yu-han-85" target="_blank">
         <span class="fa-stack fa-lg">
           <i class="fa fa-circle fa-stack-2x"></i>
           <i class="fa fa-stack-1x fa-inverse">知</i>
         </span>
       </a>
-    <% } %>
-    <% if (theme.about.douban_username) { %>
-        <a class="icon-douban" href="https://www.douban.com/people/<%- theme.about.douban_username %>" target="_blank">
-            <span class="fa-stack fa-lg">
-                <i class="fa fa-circle fa-stack-2x"></i>
-                <i class="fa fa-stack-1x fa-inverse">豆</i>
-            </span>
-        </a>
-    <% } %>
+    
+    
+  </section>
+  <section style="margin-top: 20px">
+    <p>Friends: <a href="https://viccrubs.me">VicCrubs</a> <a href="https://idealclover.top">idealclover</a></p>
   </section>
 </div>
 
