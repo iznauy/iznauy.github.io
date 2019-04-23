@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html>
+  <head><meta name="generator" content="Hexo 3.8.0">
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+  <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport">
+  <meta name="description" content="iznauy&#39;s blog">
+  <meta name="keyword" content="hexo-theme, vuejs">
+  
+    <link rel="shortcut icon" href="/css/images/logo.png">
+  
+  <title>
+    
+      Redis 底层数据结构 | Hexo
+    
+  </title>
+  <link href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+  <link href="//cdnjs.cloudflare.com/ajax/libs/nprogress/0.2.0/nprogress.min.css" rel="stylesheet">
+  <link href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/tomorrow.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="/css/style.css">
+  
+  <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/geopattern/1.2.3/js/geopattern.min.js"></script>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/nprogress/0.2.0/nprogress.min.js"></script>
+  
+    <script src="/js/qrious.js"></script>
+  
+  
+  
+  
+    <!-- MathJax support START -->
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+      });
+    </script>
+
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+      });
+    </script>
+    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <!-- MathJax support END -->
+  
+
+
+</head>
+<div class="wechat-share">
+  <img src="/css/images/logo.png">
+</div>
+
+  <body>
+    <header class="header fixed-header">
+  <div class="header-container">
+    <a class="home-link" href="/">
+      <div class="logo"></div>
+      <span>Hexo</span>
+    </a>
+    <ul class="right-list">
+      
+        <li class="list-item">
+          
+            <a href="/" class="item-link">Home</a>
+          
+        </li>
+      
+        <li class="list-item">
+          
+            <a href="/tags/" class="item-link">Tags</a>
+          
+        </li>
+      
+        <li class="list-item">
+          
+            <a href="/archives/" class="item-link">Archives</a>
+          
+        </li>
+      
+        <li class="list-item">
+          
+            <a href="/project/" class="item-link">Projects</a>
+          
+        </li>
+      
+        <li class="list-item">
+          
+            <a href="/about/" class="item-link">About</a>
+          
+        </li>
+      
+    </ul>
+    <div class="menu">
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+    </div>
+    <div class="menu-mask">
+      <ul class="menu-list">
+        
+          <li class="menu-item">
+            
+              <a href="/" class="menu-link">Home</a>
+            
+          </li>
+        
+          <li class="menu-item">
+            
+              <a href="/tags/" class="menu-link">Tags</a>
+            
+          </li>
+        
+          <li class="menu-item">
+            
+              <a href="/archives/" class="menu-link">Archives</a>
+            
+          </li>
+        
+          <li class="menu-item">
+            
+              <a href="/project/" class="menu-link">Projects</a>
+            
+          </li>
+        
+          <li class="menu-item">
+            
+              <a href="/about/" class="menu-link">About</a>
+            
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</header>
+
+    <div id="article-banner">
+  <h2>Redis 底层数据结构</h2>
+  <p class="post-date">2019-04-22</p>
+  <div class="arrow-down">
+    <a href="javascript:;"></a>
+  </div>
+</div>
+<main class="app-body flex-box">
+  <!-- Article START -->
+  <article class="post-article">
+    <section class="markdown-content"><h3 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h3><p>最近在学习 Redis 底层实现，为了加深记忆，打算写一系列关于 Redis 的博客。</p>
+<p>内容主要源自于《Redis 设计与实现》、网上的一些博客以及自己阅读源码后的一些思考。</p>
+<h3 id="动态字符串"><a href="#动态字符串" class="headerlink" title="动态字符串"></a>动态字符串</h3><p>Redis 没有采用传统的 C 字符串的表示方式，而是构造了一种名为简单动态字符串（SDS）的抽象结构。Redis 中绝大多数字符串都是以 SDS 的形式存在的，除了少数的字符串字面量。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">sdshdr</span> &#123;</span></span><br><span class="line">  <span class="comment">// buf 数组中已使用字符串的数量，也就是字符串的长度</span></span><br><span class="line">  <span class="keyword">int</span> len;</span><br><span class="line">  <span class="comment">// buf 数组中未使用空间的大小</span></span><br><span class="line">  <span class="keyword">int</span> <span class="built_in">free</span>;</span><br><span class="line">  <span class="keyword">char</span> buf[];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><img src="redis_pic/SDS.png" alt="SDS"></p>
+<p>注意，其实<code>buf</code>数组的长度并非<code>free + len</code>，而是<code>free + len + 1</code>。因为为了兼容一部分 C 语言函数，Redis 在字符串的末尾还加了一个<code>\0</code>，来表示字符串的结束。</p>
+<blockquote>
+<p>这儿有一个很有趣的 trick，就是结构体中的<code>buf[]</code>。</p>
+<p>如果去执行下<code>sizeof(struct sdshdr)</code>，你就会发现其实<code>buf[]</code>是不占用任何空间的（输出是 8）。使用<code>sds-&gt;buf</code>访问字符数组，其实已经超出了结构体所占的空间，理论上程序会产生严重的错误，但为什么还出现在了知名的开源库中呢？</p>
+<p>其实，上述的问题如果编程的当的话，都不是问题，而且这种写法还存在很多优势。</p>
+<p>首先，如果直接在栈上建立这样的一个结构，使用<code>buf</code>属性去访问确实会产生错误，但是，如果你在堆上分配了一块长度为<code>n + 8</code>的空间，并把空间首地址转化为一个<code>sdshdr</code>类型的指针，那么<code>sds-&gt;buf</code>实际上就是一个长度为<code>n</code>的字符数组，对其进行各种操作都不会覆盖掉别的数据。</p>
+<p>这样写的一些优点：</p>
+<ul>
+<li>节省内存：<code>char * buf</code>比<code>char buf[0]</code>要额外占用 4 个字节的空间</li>
+<li>分配/释放速度快：只需要分配/释放一次内存</li>
+<li>使用方便：使用字符数组的同时可以很方便的获取到字符数组的一些元信息</li>
+</ul>
+</blockquote>
+<p>动态字符串的一些优点：</p>
+<ul>
+<li>常数时间获取字符串长度</li>
+<li>可以防止缓冲区溢出<ul>
+<li>Redis 提供了对 SDS 操作的函数，每次操作前都先检查<code>free</code>的大小是否能满足当前需要，如果不能，那么就重新分配内存，这样就避免的缓冲区溢出</li>
+</ul>
+</li>
+<li>减少修改字符串长度时需要的内存分配次数<ul>
+<li>Redis 中，对 SDS 扩容采取了空间预分配和惰性空间释放的优化策略，修改字符串长度 N 次也最多需要执行 N 次内存重分配（一般远小于 N 次）</li>
+<li>空间预分配：<ul>
+<li>如果对 SDS 修改后，SDS 长度小于 1MB，那么程序额外分配和已使用长度相同的未使用空间。</li>
+<li>如果对 SDS 修改后，SDS 长度大于 1MB，那么程序额外分配 1MB 的未使用空间。</li>
+</ul>
+</li>
+<li>惰性空间释放：<ul>
+<li>SDS 被修改后如果变短了，程序也不会收回空间。避免了字符串缩短所需要的内存重分配操作，并且为将来可能的增长操作提供了优化。</li>
+<li>同时，SDS 也提供了释放空间的 API，当系统内存不足时候，可以去释放 SDS 的未使用空间。</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>二进制安全<ul>
+<li>SDS 也可以直接存储二进制数据，因为 SDS 不以<code>\0</code>作为判断字符串是否结束的依据</li>
+<li>对于二进制数据，无法使用 C 字符串函数</li>
+</ul>
+</li>
+<li>兼容部分 C 字符串函数</li>
+</ul>
+<h3 id="链表"><a href="#链表" class="headerlink" title="链表"></a>链表</h3><p><img src="redis_pic/链表.png" alt="链表"></p>
+<p>Redis 中的链表是双端链表。每个链表节点使用以下结构表示：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> <span class="title">listNode</span> &#123;</span></span><br><span class="line">  <span class="comment">// 前置节点</span></span><br><span class="line">  <span class="class"><span class="keyword">struct</span> <span class="title">listNode</span> * <span class="title">prev</span>;</span></span><br><span class="line">  <span class="comment">// 后置节点</span></span><br><span class="line">  <span class="class"><span class="keyword">struct</span> <span class="title">listNode</span> * <span class="title">next</span>;</span></span><br><span class="line">  <span class="comment">// 节点值</span></span><br><span class="line">  <span class="keyword">void</span> * value;</span><br><span class="line">&#125; listNode;</span><br></pre></td></tr></table></figure>
+<p>链表整体使用<code>list</code>结构表示：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> <span class="title">list</span> &#123;</span></span><br><span class="line">  <span class="comment">// 头节点</span></span><br><span class="line">  listNode * head;</span><br><span class="line">  <span class="comment">// 尾节点</span></span><br><span class="line">  listNode * tail;</span><br><span class="line">  <span class="comment">// 链表所包含的节点数量</span></span><br><span class="line">  <span class="keyword">unsigned</span> <span class="keyword">long</span> len;</span><br><span class="line">  <span class="comment">// 节点复制函数</span></span><br><span class="line">  <span class="keyword">void</span> * (* dup) (<span class="keyword">void</span> * ptr);</span><br><span class="line">  <span class="comment">// 节点释放函数</span></span><br><span class="line">  <span class="keyword">void</span> (* <span class="built_in">free</span>) (<span class="keyword">void</span> * ptr);</span><br><span class="line">  <span class="comment">// 节点值对比函数</span></span><br><span class="line">  <span class="keyword">int</span> (* match) (<span class="keyword">void</span> * ptr, <span class="keyword">void</span> * key);</span><br><span class="line">&#125; <span class="built_in">list</span>;</span><br></pre></td></tr></table></figure>
+<p>Redis 中链表主要的特点：</p>
+<ul>
+<li>无环的双端链表</li>
+<li>链表使用<code>list</code>结构表示，存储了一些元信息，包含头结点、尾节点和链表长度等等，可以实现双向遍历</li>
+<li>通过设置不同的操作函数，链表可以保存各种类型的值。</li>
+</ul>
+<h3 id="字典"><a href="#字典" class="headerlink" title="字典"></a>字典</h3><p><img src="redis_pic/字典.png" alt="字典"></p>
+<p>Redis 的字典使用哈希表作为底层实现，一个哈希表中有多个节点，每个节点保存了一个键值对。</p>
+<p>涉及到下面三种数据结构：</p>
+<p><strong>哈希表</strong></p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> <span class="title">dictht</span> &#123;</span></span><br><span class="line">  <span class="comment">// 哈希表数组</span></span><br><span class="line">  dictEntry **table;</span><br><span class="line">  <span class="comment">// 哈希表大小</span></span><br><span class="line">  <span class="keyword">unsigned</span> <span class="keyword">long</span> size;</span><br><span class="line">  <span class="comment">// 掩码，等于 size - 1，用于计算索引值</span></span><br><span class="line">  <span class="keyword">unsigned</span> <span class="keyword">long</span> sizemark;</span><br><span class="line">  <span class="comment">// 哈希表已有节点的数量</span></span><br><span class="line">  <span class="keyword">unsigned</span> <span class="keyword">long</span> used;</span><br><span class="line">&#125; dictht;</span><br></pre></td></tr></table></figure>
+<p><strong>哈希表节点</strong></p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> <span class="title">dictEntry</span> &#123;</span></span><br><span class="line">  <span class="comment">// 键</span></span><br><span class="line">  <span class="keyword">void</span> * key;</span><br><span class="line">  <span class="comment">// 值</span></span><br><span class="line">  <span class="keyword">union</span> &#123;</span><br><span class="line">    <span class="keyword">void</span> *val;</span><br><span class="line">    <span class="keyword">uint64_t</span> u64;</span><br><span class="line">    <span class="keyword">int64_t</span> s64;</span><br><span class="line">  &#125; v;</span><br><span class="line">  <span class="comment">// 使用链接法解决冲突</span></span><br><span class="line">  <span class="class"><span class="keyword">struct</span> <span class="title">dictEntry</span> * <span class="title">next</span>;</span></span><br><span class="line">&#125; dictEntry;</span><br></pre></td></tr></table></figure>
+<p>Redis 中的哈希表使用链接法解决冲突，因此节点中有一个<code>next</code>指针，将映射到同一个位置的数据项串成链表。</p>
+<p><strong>字典</strong></p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> <span class="title">dict</span> &#123;</span></span><br><span class="line">  <span class="comment">// 类型指定函数</span></span><br><span class="line">  dictType *type;</span><br><span class="line">  <span class="comment">// 私有数据</span></span><br><span class="line">  <span class="keyword">void</span> * privdata;</span><br><span class="line">  <span class="comment">// 哈希表</span></span><br><span class="line">  dictht ht[<span class="number">2</span>];</span><br><span class="line">  <span class="comment">// rehash 索引，如果不在进行 rehash，那么其值为 -1</span></span><br><span class="line">  <span class="keyword">int</span> trehashidx;</span><br><span class="line">&#125; dict;</span><br></pre></td></tr></table></figure>
+<p><code>type</code>属性和<code>privdata</code>属性是针对不同类型的键值对，为创建多态字典而设置的。</p>
+<ul>
+<li><code>type</code>属性是一个指向<code>dictType</code>结构的指针，每个<code>dictType</code>结构保存一尊用于操作特定类型键值对的函数，Redis 会为用途不同的字典设置不同类型特定函数</li>
+<li><code>privdata</code>保存了需要传给那些类型特定函数的可选参数。</li>
+</ul>
+<p><code>ht</code>属性是一个包含两项的数组，每一项都是一个哈希表。正常境况下使用<code>ht[0]</code>，当进行 rehash 时候，<code>ht[1]</code>才会被使用。</p>
+<p><strong>rehash 的过程</strong></p>
+<ol>
+<li>为<code>ht[1]</code>的哈希表分配空间（有可能扩大，也可能缩小：当负载因子很大时候就扩容，当负载因子小于 0.1 的时候就缩小）</li>
+<li>将 <code>ht[0]</code>中的键值对 rehash 到<code>ht[1]</code>中。</li>
+<li>当所有数据都迁移完毕后，释放<code>ht[0]</code>，将<code>ht[1]</code>设置为<code>ht[0]</code>，并且在<code>ht[1]</code>创建一个空白哈希表，为一下次的 rehash 做准备。</li>
+</ol>
+<p>不过直接 rehash 会导致服务器在一段时间内无法响应其他请求，一般都采用渐进式 rehash。</p>
+<p>渐进式 rehash 在将<code>ht[0]</code>键值对转移到<code>ht[1]</code>不是在一次查询中完成的，而是分摊到每一次的访问中。</p>
+<p>渐进式 rehash 开始时候，将<code>rehashidx</code>设置为 0，每移动一个键值对到<code>ht[1]</code>中，该字段增一。随着操作不断进行，最终<code>ht[0]</code>的键值对都被转移到了<code>ht[1]</code>中，然后将<code>rehashidx</code>设置为 -1，表示<code>rehash</code>已经完成。</p>
+<p>在渐进式 rehash 的过程中，字典会同时使用<code>ht[0]</code>和<code>ht[1]</code>两个哈希表。字典的删除、查找、更新会在两个表上进行。例如，要在字典中查找一个键的话，程序会先在<code>ht[0]</code>中找，没找到的话，再去<code>ht[1]</code>中找。对于增加操作，只在<code>ht[1]</code>中进行。这就保证了<code>ht[0]</code>的键值对数量不会增加，随着时间里流逝最终变成空表。</p>
+<h3 id="跳跃表"><a href="#跳跃表" class="headerlink" title="跳跃表"></a>跳跃表</h3><p>跳表是一种有序的数据结构，支持对数级别的节点查找，还可以顺序性操作来批量处理节点。</p>
+<p>之前面试时候被问到过一个问题：<strong>Redis 为什么使用跳表而不用平衡树</strong></p>
+<p>查了一下原作者的观点：</p>
+<blockquote>
+<p>There are a few reasons:</p>
+<p>1) They are not very memory intensive. It’s up to you basically. Changing parameters about the probability of a node to have a given number of levels will make then less memory intensive than btrees.</p>
+<p>2) A sorted set is often target of many ZRANGE or ZREVRANGE operations, that is, traversing the skip list as a linked list. With this operation the cache locality of skip lists is at least as good as with other kind of balanced trees.</p>
+<p>3) They are simpler to implement, debug, and so forth. For instance thanks to the skip list simplicity I received a patch (already in Redis master) with augmented skip lists implementing ZRANK in O(log(N)). It required little changes to the code.</p>
+</blockquote>
+<p>我的理解大致就是：</p>
+<ul>
+<li>跳表实现起来要比红黑树等简单得多</li>
+<li>跳表易于实现范围查找：在最底层，跳表中所有元素连接成了一个链表，范围查找时候找到最小值后对链表进行遍历即可，而平衡树需要中序遍历，空间复杂度较高</li>
+<li>跳表的空间局部性会显著好于平衡树</li>
+</ul>
+<p><img src="redis_pic/跳表.png" alt="跳表"></p>
+<p><strong>跳跃表节点</strong></p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> <span class="title">zskiplistNode</span> &#123;</span></span><br><span class="line">  <span class="comment">// 层</span></span><br><span class="line">  <span class="class"><span class="keyword">struct</span> <span class="title">zskiplistLevel</span> &#123;</span></span><br><span class="line">    <span class="comment">// 前进指针</span></span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">zskiplistNode</span> * <span class="title">forward</span>;</span></span><br><span class="line">    <span class="comment">// 跨度</span></span><br><span class="line">    <span class="keyword">unsigned</span> <span class="keyword">int</span> span;</span><br><span class="line">  &#125; level[];</span><br><span class="line">  <span class="comment">// 后退指针</span></span><br><span class="line">  <span class="class"><span class="keyword">struct</span> <span class="title">zskiplistNode</span> * <span class="title">backword</span>;</span></span><br><span class="line">  <span class="comment">// 分值</span></span><br><span class="line">  <span class="keyword">double</span> score;</span><br><span class="line">  <span class="comment">// 成员对象</span></span><br><span class="line">  robj * obj;</span><br><span class="line">&#125; zskiplistNode;</span><br></pre></td></tr></table></figure>
+<p>后退指针主要用来实现反向遍历。</p>
+<p>跨度记录两个节点之间的距离，主要是用来计算节点的排位的：在查找某个节点的过程中，将沿途访问过的所有层的跨度累计起来，得到的结果就是目标节点在跳跃表中的排位。</p>
+<p>分值是对象用来排序的依据，跳跃表中的所有节点按照分值从小到大来排序。成员对象是一个指针指向一个字符串对象。</p>
+<p>在同一个跳跃表中，各个节点保存的成员对象必须是唯一的，但多个节点的分值可以相同。分值相同的节点按照成员对象的字典序从小到大排列。</p>
+<p><strong>跳跃表</strong></p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> <span class="title">zskiplist</span> &#123;</span></span><br><span class="line">  <span class="comment">// 表头和表位</span></span><br><span class="line">  <span class="class"><span class="keyword">struct</span> <span class="title">zskiplistNode</span> * <span class="title">header</span>, * <span class="title">tail</span>;</span></span><br><span class="line">  <span class="comment">// 表中节点个数</span></span><br><span class="line">  <span class="keyword">unsigned</span> <span class="keyword">long</span> length;</span><br><span class="line">  <span class="comment">// 表中层数最大的节点的层数，可以理解为从哪一层开始搜。</span></span><br><span class="line">  <span class="keyword">int</span> level;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="整数集合"><a href="#整数集合" class="headerlink" title="整数集合"></a>整数集合</h3><p>整数集合是集合键的底层实现之一，当一个集合只包含整数而且集合的元素数量不多时候，Redis 使用整数集合作为集合键的底层实现。</p>
+<p><img src="redis_pic/整数集合.png" alt="整数集合"></p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> <span class="title">intset</span> &#123;</span></span><br><span class="line">  <span class="comment">// 编码方式</span></span><br><span class="line">  <span class="keyword">uint32_t</span> encoding;</span><br><span class="line">  <span class="comment">// 集合包含的元素个数</span></span><br><span class="line">  <span class="keyword">uint32_t</span> length;</span><br><span class="line">  <span class="comment">// 保存元素的数组</span></span><br><span class="line">  <span class="keyword">int8_t</span> contents[];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><code>contents</code>数组是整数集合的底层实现：整数集合每个元素都是<code>constents</code>数组中的一个数组项，每个项在数组中按值的大小从小到大有序排列，并且数组中不包含任何重复项。数组中实际存储的不是<code>int8_t</code>，数组中元素的真正类型取决于<code>encoding</code>属性（比如<code>contents[0]</code>和<code>contents[1]</code>拼起来才是一个数组项）。</p>
+<p><code>length</code>记录了<code>contents</code>数组中数据项的个数。</p>
+<p><code>encoding</code>属性指明了解释<code>contents</code>数组的方式。</p>
+<p><strong>升级</strong></p>
+<p>每次要把一个新元素加入到整数集合中，并且新元素的类型比整数集合当前类型要长的话，那么整数集合要进行升级，然后才能把新元素加进去：</p>
+<ol>
+<li>根据新元素的类型，扩展整数集合底层数组的空间大小，并为新元素分配空间。</li>
+<li>将底层数组现有的所有元素都转换成与新元素相同的类型，并放到正确的位置上（保持有序性不变）。</li>
+<li>将新元素添加到底层数组中</li>
+</ol>
+<p>升级的优势：</p>
+<ul>
+<li>提升灵活性：可以放入任意类型的整数，集合会自动调整底层实现，而不会发生错误，非常灵活</li>
+<li>节约内存：有可能的话，用尽量少的空间去保存所有的数据</li>
+</ul>
+<h3 id="压缩列表"><a href="#压缩列表" class="headerlink" title="压缩列表"></a>压缩列表</h3><p>压缩列表是 Redis 为了节约内存而开发的，是由一系列特殊编码的连续内存块组成的顺序性数据结构。一个压缩列表可以包含任意多个结点，每个节点可以保存一个字符数组或整数。</p>
+<p><img src="redis_pic/压缩列表_1.png" alt="压缩列表_1"></p>
+<p><img src="redis_pic/压缩列表_2.png" alt="压缩列表_2"></p>
+<p><code>content</code>是当前项存储的数据。</p>
+<p><code>encoding</code>字段指明了<code>content</code>的内容和长度。</p>
+<p><code>previous_entry_length</code>指明了前一项的总长度。该项可以是一字节也可以是五字节：</p>
+<ul>
+<li>如果前一节点长度小于 254，那么该字段为 1 字节。</li>
+<li>如果前一节点长度大于等于 254，那么该字段长度为 4 字节。</li>
+</ul>
+<blockquote>
+<p>因为这一字段不是定长的，所以可能会导致<a href="http://redisbook.com/preview/ziplist/cascade_update.html" target="_blank" rel="noopener">连锁更新</a>问题，导致平方级的时间复杂度。不过这一事件发生的概率极小。</p>
+</blockquote>
+<p>对压缩列表进行修改/增加/删除/读取操作的平均时间复杂度都是线性的。所以只有在元素数量较少、元素的大小较小时候才使用压缩列表。</p>
+<p>此外，压缩列表可以减少内存碎片化——将大量的小数据对象存储在一个连续的内存区域中，对 cache 很友好。</p>
+</section>
+    <!-- Tags START -->
+    
+      <div class="tags">
+        <span>Tags:</span>
+        
+  <a href="/tags#Redis">
+    <span class="tag-code">Redis</span>
+  </a>
+
+      </div>
+    
+    <!-- Tags END -->
+    <!-- NAV START -->
+    
+  <div class="nav-container">
+    <!-- reverse left and right to put prev and next in a more logic postition -->
+    
+      <a class="nav-left" href="/2019/04/19/LeetCode-第132场周赛/">
+        <span class="nav-arrow">← </span>
+        
+          LeetCode 第132场周赛
+        
+      </a>
+    
+    
+  </div>
+
+    <!-- NAV END -->
+    <!-- 打赏 START -->
+    
+    <!-- 打赏 END -->
+    <!-- 二维码 START -->
+    
+      <div class="qrcode">
+        <canvas id="share-qrcode"></canvas>
+        <p class="notice">扫描二维码，分享此文章</p>
+      </div>
+    
+    <!-- 二维码 END -->
+    
+      <!-- No Comment -->
+    
+  </article>
+  <!-- Article END -->
+  <!-- Catalog START -->
+  
+    <aside class="catalog-container">
+  <div class="toc-main">
+    <strong class="toc-title">Catalog</strong>
+    
+      <ol class="toc-nav"><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#背景"><span class="toc-nav-text">背景</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#动态字符串"><span class="toc-nav-text">动态字符串</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#链表"><span class="toc-nav-text">链表</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#字典"><span class="toc-nav-text">字典</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#跳跃表"><span class="toc-nav-text">跳跃表</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#整数集合"><span class="toc-nav-text">整数集合</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#压缩列表"><span class="toc-nav-text">压缩列表</span></a></li></ol>
+    
+  </div>
+</aside>
+  
+  <!-- Catalog END -->
+</main>
+
+<script>
+  (function () {
+    var url = 'http://yoursite.com/2019/04/22/Redis-底层数据结构/';
+    var banner = ''
+    if (banner !== '' && banner !== 'undefined' && banner !== 'null') {
+      $('#article-banner').css({
+        'background-image': 'url(' + banner + ')'
+      })
+    } else {
+      $('#article-banner').geopattern(url)
+    }
+    $('.header').removeClass('fixed-header')
+
+    // error image
+    $(".markdown-content img").on('error', function() {
+      $(this).attr('src', 'http://file.muyutech.com/error-img.png')
+      $(this).css({
+        'cursor': 'default'
+      })
+    })
+
+    // zoom image
+    $(".markdown-content img").on('click', function() {
+      var src = $(this).attr('src')
+      if (src !== 'http://file.muyutech.com/error-img.png') {
+        var imageW = $(this).width()
+        var imageH = $(this).height()
+
+        var zoom = ($(window).width() * 0.95 / imageW).toFixed(2)
+        zoom = zoom < 1 ? 1 : zoom
+        zoom = zoom > 2 ? 2 : zoom
+        var transY = (($(window).height() - imageH) / 2).toFixed(2)
+
+        $('body').append('<div class="image-view-wrap"><div class="image-view-inner"><img src="'+ src +'" /></div></div>')
+        $('.image-view-wrap').addClass('wrap-active')
+        $('.image-view-wrap img').css({
+          'width': `${imageW}`,
+          'transform': `translate3d(0, ${transY}px, 0) scale3d(${zoom}, ${zoom}, 1)`
+        })
+        $('html').css('overflow', 'hidden')
+
+        $('.image-view-wrap').on('click', function() {
+          $(this).remove()
+          $('html').attr('style', '')
+        })
+      }
+    })
+  })();
+</script>
+
+
+  <script>
+    var qr = new QRious({
+      element: document.getElementById('share-qrcode'),
+      value: document.location.href
+    });
+  </script>
+
+
+
+
+
+
+    <div class="scroll-top">
+  <span class="arrow-icon"></span>
+</div>
+    <footer class="app-footer">
+  <p class="copyright">
+    &copy; 2019 | Proudly powered by <a href="https://hexo.io" target="_blank">Hexo</a>
+    <br>
+    Theme by <a href="https://github.com/yanm1ng">yanm1ng</a>
+  </p>
+</footer>
+
+<script>
+  function async(u, c) {
+    var d = document, t = 'script',
+      o = d.createElement(t),
+      s = d.getElementsByTagName(t)[0];
+    o.src = u;
+    if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+    s.parentNode.insertBefore(o, s);
+  }
+</script>
+<script>
+  async("//cdnjs.cloudflare.com/ajax/libs/fastclick/1.0.6/fastclick.min.js", function(){
+    FastClick.attach(document.body);
+  })
+</script>
+
+<script>
+  var hasLine = 'true';
+  async("//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js", function(){
+    $('figure pre').each(function(i, block) {
+      var figure = $(this).parents('figure');
+      if (hasLine === 'false') {
+        figure.find('.gutter').hide();
+      }
+      var lang = figure.attr('class').split(' ')[1] || 'code';
+      var codeHtml = $(this).html();
+      var codeTag = document.createElement('code');
+      codeTag.className = lang;
+      codeTag.innerHTML = codeHtml;
+      $(this).attr('class', '').empty().html(codeTag);
+      figure.attr('data-lang', lang.toUpperCase());
+      hljs.highlightBlock(block);
+    });
+  })
+</script>
+<!-- Baidu Tongji -->
+
+<script src="/js/script.js"></script>
+  </body>
+</html>
