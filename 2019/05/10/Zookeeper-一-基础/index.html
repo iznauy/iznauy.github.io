@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html>
+  <head><meta name="generator" content="Hexo 3.8.0">
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+  <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport">
+  <meta name="description" content="iznauy&#39;s blog">
+  <meta name="keyword" content="hexo-theme, vuejs">
+  
+    <link rel="shortcut icon" href="/css/images/logo.png">
+  
+  <title>
+    
+      Zookeeper(一) 基础 | Hexo
+    
+  </title>
+  <link href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+  <link href="//cdnjs.cloudflare.com/ajax/libs/nprogress/0.2.0/nprogress.min.css" rel="stylesheet">
+  <link href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/tomorrow.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="/css/style.css">
+  
+  <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/geopattern/1.2.3/js/geopattern.min.js"></script>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/nprogress/0.2.0/nprogress.min.js"></script>
+  
+    <script src="/js/qrious.js"></script>
+  
+  
+  
+  
+    <!-- MathJax support START -->
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+      });
+    </script>
+
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+      });
+    </script>
+    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <!-- MathJax support END -->
+  
+
+
+</head>
+<div class="wechat-share">
+  <img src="/css/images/logo.png">
+</div>
+
+  <body>
+    <header class="header fixed-header">
+  <div class="header-container">
+    <a class="home-link" href="/">
+      <div class="logo"></div>
+      <span>Hexo</span>
+    </a>
+    <ul class="right-list">
+      
+        <li class="list-item">
+          
+            <a href="/" class="item-link">Home</a>
+          
+        </li>
+      
+        <li class="list-item">
+          
+            <a href="/tags/" class="item-link">Tags</a>
+          
+        </li>
+      
+        <li class="list-item">
+          
+            <a href="/archives/" class="item-link">Archives</a>
+          
+        </li>
+      
+        <li class="list-item">
+          
+            <a href="/project/" class="item-link">Projects</a>
+          
+        </li>
+      
+        <li class="list-item">
+          
+            <a href="/about/" class="item-link">About</a>
+          
+        </li>
+      
+    </ul>
+    <div class="menu">
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+    </div>
+    <div class="menu-mask">
+      <ul class="menu-list">
+        
+          <li class="menu-item">
+            
+              <a href="/" class="menu-link">Home</a>
+            
+          </li>
+        
+          <li class="menu-item">
+            
+              <a href="/tags/" class="menu-link">Tags</a>
+            
+          </li>
+        
+          <li class="menu-item">
+            
+              <a href="/archives/" class="menu-link">Archives</a>
+            
+          </li>
+        
+          <li class="menu-item">
+            
+              <a href="/project/" class="menu-link">Projects</a>
+            
+          </li>
+        
+          <li class="menu-item">
+            
+              <a href="/about/" class="menu-link">About</a>
+            
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</header>
+
+    <div id="article-banner">
+  <h2>Zookeeper(一) 基础</h2>
+  <p class="post-date">2019-05-10</p>
+  <div class="arrow-down">
+    <a href="javascript:;"></a>
+  </div>
+</div>
+<main class="app-body flex-box">
+  <!-- Article START -->
+  <article class="post-article">
+    <section class="markdown-content"><h2 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h2><p>为了协调分布式数据中各个进程之间的关系。</p>
+<p>主从架构（常见分布式系统）需求：</p>
+<ol>
+<li><p>主节点选举</p>
+<p>使得主节点可以给从节点分配任务</p>
+</li>
+<li><p>崩溃检测</p>
+<p>主节点必须具有检测从节点崩溃或失去连接的能力</p>
+</li>
+<li><p>组成员关系管理</p>
+<p>主节点必须具有知道哪一个从节点可以执行任务的能力</p>
+</li>
+<li><p>元数据管理</p>
+<p>主节点和从节点必须具有通过某种可靠的方式来保存分配状态和执行状态的能力</p>
+</li>
+</ol>
+<p>以上需求都可以被视为协作的原语，反映了分布式系统中通用的需求，因此，设计一个用于协作需求的服务的方法往往是提供原语列表，暴露出每个原语的实例化调用方法，并直接控制这些实例。</p>
+<p>但是这种设计存在重大缺陷：首先，我们要么预先提出一份详尽的原语列表，要么提供 API 扩展，以便引入新的原语；其次，以这种方式实现原语的服务使得应用丧失了灵活性。</p>
+<p>Zookeeper 没有选择这种方式，而是提供了一小部分调用方法组成的类似文件系统的 API，以便允许应用实现自己的原语。</p>
+<h2 id="Zookeeper-基础"><a href="#Zookeeper-基础" class="headerlink" title="Zookeeper 基础"></a>Zookeeper 基础</h2><h3 id="Znode"><a href="#Znode" class="headerlink" title="Znode"></a>Znode</h3><p>Zookeeper 的核心概念是 znode，有点类似文件系统中的文件/文件夹，包含路径和数据（可选的，字节数组），每个 znode 可以有子节点。</p>
+<h4 id="Znode-分类"><a href="#Znode-分类" class="headerlink" title="Znode 分类"></a>Znode 分类</h4><h5 id="持久节点-amp-临时节点"><a href="#持久节点-amp-临时节点" class="headerlink" title="持久节点 &amp; 临时节点"></a>持久节点 &amp; 临时节点</h5><p>znode 节点可以是持久节点，还可以是临时节点。持久的 znode，只能调用 delete 来删除。临时节点与之相反，当创建该节点的客户端崩溃或关闭了与 Zookeeper 的连接时候，这个节点就会被删除。</p>
+<p>持久化节点很有用，可以为分布式应用保存一些数据，即使节点的创建者不再属于该应用系统，数据也可以保存下来而不丢失。例如，在主从模式中，需要保存从节点的任务分配情况，即使分配任务的主节点已经崩溃了。</p>
+<p>临时节点传递了应用的一些信息，仅当创建者会话有效时候，临时节点才存在。一个例子就是主节点问题。当临时主 znode 存在时候，说明主节点正常工作。当主节点崩溃之后，主 znode 也会随之消失。这样从节点/备主节点就会知道主节点已经崩溃，从而进行后续操作。</p>
+<p>值得注意的是，因为临时的 znode 在创建者会话结束后会被删除，所以目前临时节点不允许拥有子节点。</p>
+<h5 id="有序节点"><a href="#有序节点" class="headerlink" title="有序节点"></a>有序节点</h5><p>一个 znode 还可以设置为有序节点。一个有序节点被分配唯一一个单调递增的整数。当创建有序节点时，一个序号会被追加到路径之后。有序节点提供了创建具有唯一名称的 znode 的简单方式。同时，通过这种方式可以直观的获取 znode 的创建顺序。</p>
+<p>综上，znode 一共有 4 种类型：持久的、临时的、持久有序的、临时有序的。</p>
+<h3 id="监视和通知"><a href="#监视和通知" class="headerlink" title="监视和通知"></a>监视和通知</h3><p>Zookeeper 采用了通知机制向客户端传递节点树的变化：客户端向 Zookeeper 注册需要接收通知的 znode，通过对 znode 设置监视点（watch）来接受通知。监视点是一个单次触发的操作，为了持续监听，客户端必须在每次通知后设置一个新的监视点。</p>
+<p>为了防止连续两次变更（在设置下一次监视点之前又出现了变更），往往在设置监视点之前都要去取一次数据，这样客户端节点就不会错过任何变更。</p>
+<p>Zookeeper 可以定义多种类型的通知，这依赖于设置监视点对应的通知类型。客户端可以设置多种监视点，如监控 znode 的数据变化，监控 znode 的子节点的变化，监控 znode 的创建和删除。</p>
+<h3 id="版本"><a href="#版本" class="headerlink" title="版本"></a>版本</h3><p>每一个 znode 都有一个版本号，它随着每次数据变化而自增。setDate 和 delete 以版本号作为传入参数，只有当传入参数的版本号与服务器上的版本号一致时调用才会成功（其实就是一种乐观锁，CAS 操作）。</p>
+<h2 id="Zookeeper-架构"><a href="#Zookeeper-架构" class="headerlink" title="Zookeeper 架构"></a>Zookeeper 架构</h2><p>Zookeeper 是 C/S 架构，分为客户端和服务器端。应用通过客户端库来对 Zookeeper 实现调用，客户端库负责与 Zookeeper 服务器端进行交互。</p>
+<p>Zookeeper 服务器端有两种模式：独立模式和仲裁模式。</p>
+<p>独立模式指的是 Zookeeper 服务器只有一台。仲裁模式也就是 Zookeeper 集群，有一组 Zookeeper 服务器。</p>
+<h3 id="Zookeeper-仲裁"><a href="#Zookeeper-仲裁" class="headerlink" title="Zookeeper 仲裁"></a>Zookeeper 仲裁</h3><p>仲裁模式下，Zookeeper 复制集群中的所有服务器的数据树。但是让一个客户端等待每个服务器完成数据保存后再继续，延迟会非常高。</p>
+<p> Zookeeper 设置了“法定人数”，是指为了使 Zookeeper 工作必须有效运行的服务器的最小数量，也是服务器告知客户端安全保存数据前，需要保存客户端数据的服务器的最小个数。</p>
+<p>一般来说，法定人数要超过集群中机器数量的一半，否则会发生“脑裂”问题。在集合中，服务器的个数不一定是奇数，只不过使用偶数会使得系统更加脆弱（浪费机器，损耗性能）。比如，在集群中使用 4 台服务器，根据多数原则，必须有 3 台服务器存活才可以提供服务，所以仅仅能容许 1 台服务器崩溃。对比使用 3 台服务器，同样也是允许 1 台服务器崩溃。同时，4 台服务器时候，每次确认需要 3 台，而 3 台服务器时候，每次确认只需要 2 台。这意味着对于每个请求，需要更多的确认操作。因此最好使用奇数台服务器。</p>
+<h3 id="会话"><a href="#会话" class="headerlink" title="会话"></a>会话</h3><p>客户端必须先和服务器端建立会话才能执行请求。会话和临时节点关系密切。</p>
+<p>客户端初始连接到集合中某一个服务器，通过 TCP 协议与服务器进行连接并通信。当会话无法与当前连接的服务器继续通信时，会话会透明地转移到另外一台服务器上。</p>
+<p>会话提供了顺序保障，意味着同一个会话中的请求会以先进先出的方式执行。</p>
+</section>
+    <!-- Tags START -->
+    
+      <div class="tags">
+        <span>Tags:</span>
+        
+  <a href="/tags#Zookeeper">
+    <span class="tag-code">Zookeeper</span>
+  </a>
+
+      </div>
+    
+    <!-- Tags END -->
+    <!-- NAV START -->
+    
+  <div class="nav-container">
+    <!-- reverse left and right to put prev and next in a more logic postition -->
+    
+      <a class="nav-left" href="/2019/04/22/Redis-底层数据结构/">
+        <span class="nav-arrow">← </span>
+        
+          Redis 底层数据结构
+        
+      </a>
+    
+    
+  </div>
+
+    <!-- NAV END -->
+    <!-- 打赏 START -->
+    
+    <!-- 打赏 END -->
+    <!-- 二维码 START -->
+    
+      <div class="qrcode">
+        <canvas id="share-qrcode"></canvas>
+        <p class="notice">扫描二维码，分享此文章</p>
+      </div>
+    
+    <!-- 二维码 END -->
+    
+      <!-- No Comment -->
+    
+  </article>
+  <!-- Article END -->
+  <!-- Catalog START -->
+  
+    <aside class="catalog-container">
+  <div class="toc-main">
+    <strong class="toc-title">Catalog</strong>
+    
+      <ol class="toc-nav"><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#背景"><span class="toc-nav-text">背景</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#Zookeeper-基础"><span class="toc-nav-text">Zookeeper 基础</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#Znode"><span class="toc-nav-text">Znode</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-4"><a class="toc-nav-link" href="#Znode-分类"><span class="toc-nav-text">Znode 分类</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-5"><a class="toc-nav-link" href="#持久节点-amp-临时节点"><span class="toc-nav-text">持久节点 &amp; 临时节点</span></a></li><li class="toc-nav-item toc-nav-level-5"><a class="toc-nav-link" href="#有序节点"><span class="toc-nav-text">有序节点</span></a></li></ol></li></ol></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#监视和通知"><span class="toc-nav-text">监视和通知</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#版本"><span class="toc-nav-text">版本</span></a></li></ol></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#Zookeeper-架构"><span class="toc-nav-text">Zookeeper 架构</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#Zookeeper-仲裁"><span class="toc-nav-text">Zookeeper 仲裁</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#会话"><span class="toc-nav-text">会话</span></a></li></ol></li></ol>
+    
+  </div>
+</aside>
+  
+  <!-- Catalog END -->
+</main>
+
+<script>
+  (function () {
+    var url = 'http://yoursite.com/2019/05/10/Zookeeper-一-基础/';
+    var banner = ''
+    if (banner !== '' && banner !== 'undefined' && banner !== 'null') {
+      $('#article-banner').css({
+        'background-image': 'url(' + banner + ')'
+      })
+    } else {
+      $('#article-banner').geopattern(url)
+    }
+    $('.header').removeClass('fixed-header')
+
+    // error image
+    $(".markdown-content img").on('error', function() {
+      $(this).attr('src', 'http://file.muyutech.com/error-img.png')
+      $(this).css({
+        'cursor': 'default'
+      })
+    })
+
+    // zoom image
+    $(".markdown-content img").on('click', function() {
+      var src = $(this).attr('src')
+      if (src !== 'http://file.muyutech.com/error-img.png') {
+        var imageW = $(this).width()
+        var imageH = $(this).height()
+
+        var zoom = ($(window).width() * 0.95 / imageW).toFixed(2)
+        zoom = zoom < 1 ? 1 : zoom
+        zoom = zoom > 2 ? 2 : zoom
+        var transY = (($(window).height() - imageH) / 2).toFixed(2)
+
+        $('body').append('<div class="image-view-wrap"><div class="image-view-inner"><img src="'+ src +'" /></div></div>')
+        $('.image-view-wrap').addClass('wrap-active')
+        $('.image-view-wrap img').css({
+          'width': `${imageW}`,
+          'transform': `translate3d(0, ${transY}px, 0) scale3d(${zoom}, ${zoom}, 1)`
+        })
+        $('html').css('overflow', 'hidden')
+
+        $('.image-view-wrap').on('click', function() {
+          $(this).remove()
+          $('html').attr('style', '')
+        })
+      }
+    })
+  })();
+</script>
+
+
+  <script>
+    var qr = new QRious({
+      element: document.getElementById('share-qrcode'),
+      value: document.location.href
+    });
+  </script>
+
+
+
+
+
+
+    <div class="scroll-top">
+  <span class="arrow-icon"></span>
+</div>
+    <footer class="app-footer">
+  <p class="copyright">
+    &copy; 2019 | Proudly powered by <a href="https://hexo.io" target="_blank">Hexo</a>
+    <br>
+    Theme by <a href="https://github.com/yanm1ng">yanm1ng</a>
+  </p>
+</footer>
+
+<script>
+  function async(u, c) {
+    var d = document, t = 'script',
+      o = d.createElement(t),
+      s = d.getElementsByTagName(t)[0];
+    o.src = u;
+    if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+    s.parentNode.insertBefore(o, s);
+  }
+</script>
+<script>
+  async("//cdnjs.cloudflare.com/ajax/libs/fastclick/1.0.6/fastclick.min.js", function(){
+    FastClick.attach(document.body);
+  })
+</script>
+
+<script>
+  var hasLine = 'true';
+  async("//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js", function(){
+    $('figure pre').each(function(i, block) {
+      var figure = $(this).parents('figure');
+      if (hasLine === 'false') {
+        figure.find('.gutter').hide();
+      }
+      var lang = figure.attr('class').split(' ')[1] || 'code';
+      var codeHtml = $(this).html();
+      var codeTag = document.createElement('code');
+      codeTag.className = lang;
+      codeTag.innerHTML = codeHtml;
+      $(this).attr('class', '').empty().html(codeTag);
+      figure.attr('data-lang', lang.toUpperCase());
+      hljs.highlightBlock(block);
+    });
+  })
+</script>
+<!-- Baidu Tongji -->
+
+<script src="/js/script.js"></script>
+  </body>
+</html>
