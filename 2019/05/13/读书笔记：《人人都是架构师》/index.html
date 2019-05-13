@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html>
+  <head><meta name="generator" content="Hexo 3.8.0">
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+  <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport">
+  <meta name="description" content="iznauy&#39;s blog">
+  <meta name="keyword" content="hexo-theme, vuejs">
+  
+    <link rel="shortcut icon" href="/css/images/logo.png">
+  
+  <title>
+    
+      读书笔记：《人人都是架构师》 | Hexo
+    
+  </title>
+  <link href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+  <link href="//cdnjs.cloudflare.com/ajax/libs/nprogress/0.2.0/nprogress.min.css" rel="stylesheet">
+  <link href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/tomorrow.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="/css/style.css">
+  
+  <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/geopattern/1.2.3/js/geopattern.min.js"></script>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/nprogress/0.2.0/nprogress.min.js"></script>
+  
+    <script src="/js/qrious.js"></script>
+  
+  
+  
+  
+    <!-- MathJax support START -->
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+      });
+    </script>
+
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+      });
+    </script>
+    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <!-- MathJax support END -->
+  
+
+
+</head>
+<div class="wechat-share">
+  <img src="/css/images/logo.png">
+</div>
+
+  <body>
+    <header class="header fixed-header">
+  <div class="header-container">
+    <a class="home-link" href="/">
+      <div class="logo"></div>
+      <span>Hexo</span>
+    </a>
+    <ul class="right-list">
+      
+        <li class="list-item">
+          
+            <a href="/" class="item-link">Home</a>
+          
+        </li>
+      
+        <li class="list-item">
+          
+            <a href="/tags/" class="item-link">Tags</a>
+          
+        </li>
+      
+        <li class="list-item">
+          
+            <a href="/archives/" class="item-link">Archives</a>
+          
+        </li>
+      
+        <li class="list-item">
+          
+            <a href="/project/" class="item-link">Projects</a>
+          
+        </li>
+      
+        <li class="list-item">
+          
+            <a href="/about/" class="item-link">About</a>
+          
+        </li>
+      
+    </ul>
+    <div class="menu">
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+    </div>
+    <div class="menu-mask">
+      <ul class="menu-list">
+        
+          <li class="menu-item">
+            
+              <a href="/" class="menu-link">Home</a>
+            
+          </li>
+        
+          <li class="menu-item">
+            
+              <a href="/tags/" class="menu-link">Tags</a>
+            
+          </li>
+        
+          <li class="menu-item">
+            
+              <a href="/archives/" class="menu-link">Archives</a>
+            
+          </li>
+        
+          <li class="menu-item">
+            
+              <a href="/project/" class="menu-link">Projects</a>
+            
+          </li>
+        
+          <li class="menu-item">
+            
+              <a href="/about/" class="menu-link">About</a>
+            
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</header>
+
+    <div id="article-banner">
+  <h2>读书笔记：《人人都是架构师》</h2>
+  <p class="post-date">2019-05-13</p>
+  <div class="arrow-down">
+    <a href="javascript:;"></a>
+  </div>
+</div>
+<main class="app-body flex-box">
+  <!-- Article START -->
+  <article class="post-article">
+    <section class="markdown-content"><h3 id="大流量限流-消峰"><a href="#大流量限流-消峰" class="headerlink" title="大流量限流/消峰"></a>大流量限流/消峰</h3><p>瞬时超大流量和高并发是很头疼的事，如果不对流量合理管制，肆意放任流量冲击系统，将会导致一系列的问题，如可用的连接资源被耗尽、分布式缓存的容量被撑爆、数据库吞吐量降低，最终会导致系统产生雪崩效应。</p>
+<p>一般来说，应对大流量和高并发的方法是通过扩容、动静分离、缓存、服务降级和限流（流量管制）这五种常规手段保护系统的稳定运行。</p>
+<p>扩容：单台服务器的处理能力有限，采用集群技术对服务器进行扩容，可以很好的提升系统整体的并发能力和可用性。节点的数量越多，并行处理能力和容错性就越强。</p>
+<p>动静分离：将动态数据和静态数据分而治之。对于静态数据的访问，应当避免请求直接落到企业的数据中心，而是在 CDN 中获取，以加快系统响应速度。</p>
+<p>缓存：在促销、秒杀场景下热点数据的读写是非常频繁的。通过使用缓存技术，用户请求直接访问内存，读写速度要远远快过任何的关系型数据库。</p>
+<p>服务降级：当系统处理能力不足时候，将非核心业务降级，可以保证系统的核心服务不受影响。</p>
+<p>限流：有很多场景下缓存和服务降级技术无法使用，比如系统中的写服务（用户下单，库存减扣，商品评论等），就需要对请求进行限流，来保护系统。</p>
+<h4 id="限流"><a href="#限流" class="headerlink" title="限流"></a>限流</h4><p>令牌桶算法：</p>
+<p>令牌桶（Token Bucket）算法主要用户限制流量的平均流入速率，并且允许一定程度上的突发流量（平时维持很多令牌，突发时候可以消耗大量令牌，可以保证突发流量）。Nginx 的限流模块是一个典型的采用令牌桶算法的实现。令牌桶算法限流的具体内容如下：</p>
+<ul>
+<li>每秒会有 r 个令牌放入桶中</li>
+<li>桶的容量是固定不变的，假设桶中最多只允许存放 b 个令牌，如果桶满了再放入令牌，则会溢出（新的令牌被丢弃）</li>
+<li>当一个 n 字节的请求包到达时，将消耗 n 个令牌，然后再发送该数据包</li>
+<li>若桶中的可用令牌数小于 n，则该数据包则会被执行限流处理（被抛弃或缓存）</li>
+</ul>
+<p>Google 的库 Guava 中的 RateLimiter 抽象类实现了令牌桶算法，可以很方便的在程序中限流。</p>
+<p>漏桶算法：</p>
+<ul>
+<li>可以以任意速率向桶（缓存队列）中流入水滴（请求）</li>
+<li>桶的容量是固定不变的，如果桶满了则溢出（直接拒绝新请求）</li>
+<li>按照固定的速率从桶中流出水滴（请求）</li>
+</ul>
+<p>漏桶算法有点类似 Java 中固定大小的线程池的处理方式。</p>
+<h4 id="秒杀系统针对业务逻辑的限流（计数器算法）"><a href="#秒杀系统针对业务逻辑的限流（计数器算法）" class="headerlink" title="秒杀系统针对业务逻辑的限流（计数器算法）"></a>秒杀系统针对业务逻辑的限流（计数器算法）</h4><p>抢购限流指的是特定的 SKU 在单位时间内只能被抢购一定的次数，一旦超过设定的阈值，系统会拒绝后续用户的抢购请求。</p>
+<p>比如某一个 SKU 限流规则为 10 秒 5000 次，如果 10 秒之内这个 SKU 的抢购次数已经达到了 5000 次，则拒绝后续抢购请求，10 秒之后，限流逻辑可以对这个 SKU 的可抢购次数（计数器）进行重置，确保之前没有抢购成功的用户可以继续正常参与抢购。</p>
+<p>如果商品抢购业务是一个由 10 台机器构成的集群，并且希望指定的 SKU 在 10 秒内只允许被抢购 5000 次，如果在本地减扣可抢购次数，那么限流规则应该被设定为 10 秒 500 次，就很好的控制住了单机并发写流量。</p>
+<h4 id="消峰方案"><a href="#消峰方案" class="headerlink" title="消峰方案"></a>消峰方案</h4><p>消峰，指的是对峰值流量进行分散处理，避免在同一时间段内产生较大的用户流量冲击系统，从而降低系统的负载压力。</p>
+<p>其实消峰主要是在业务上进项调整，从而达到流量管制的目的。</p>
+<p>活动分时段进行实现消峰：</p>
+<p>比如将零点的秒杀系统分成五个时间段，每个时间段秒杀一定数量的商品，那么大家都不会非常着急的在同一个时间段进行秒杀。</p>
+<p>通过答题验证实现消峰：</p>
+<p>在抢购请求时候，进行问题验证（比如 12306 的售票验证码），可以承购阻截秒杀器和峰值流量。（从两个方面考虑：1. 不同的人完成验证问题的时间不同，分散了请求到达的时间。 2. 问题验证有时候会失败，会进一步的延长请求到达的时间。）</p>
+<h4 id="异步调用"><a href="#异步调用" class="headerlink" title="异步调用"></a>异步调用</h4><p>通过消息中间件实现的异步调用是分布式环境下解决系统之间的耦合和大流量消峰的重要手段。</p>
+<p>关于异步调用解耦：</p>
+<p>必要逻辑在进程之中执行，非必要逻辑通过消息队列，在其他进程之中执行，这样确保了主进程的逻辑的单一性，使得主逻辑和非必要逻辑之间解耦（有点像加了一个中间层）。</p>
+<p>基于 MQ 方案实现流量消峰：</p>
+<p>一般而言，在使用 MQ 进行流量消峰的场景中，更多还是体现在控制并发写流量降低后端存储系统的负载压力。比如数据库或者分布式缓存系统，如果并发写的流量过大，往往会导致吞吐量降低，甚至被瞬间到达的请求压垮，所以需要一种手段，对并发写流量进行排队处理。</p>
+<p>就像是漏桶算法，服务不需要关心入口流量有多大，只关心出口流量的大小。在消息接收端可以指定适当数量的线程，比如 MQ 的工作线程设置为 100，那么在同一时间并发写的流量也就被控制到了 100 以内。</p>
+<p>在应用中埋点上报就很适合使用消息队列来消峰（非主干逻辑，且不需要同步执行）。</p>
+<h3 id="分布式配置管理服务"><a href="#分布式配置管理服务" class="headerlink" title="分布式配置管理服务"></a>分布式配置管理服务</h3><p>配置一般有两种形式，一种是基于本地配置形式，一种适用于大规模分布式场景的集中式资源配置形式。</p>
+<h4 id="本地配置"><a href="#本地配置" class="headerlink" title="本地配置"></a>本地配置</h4><p>一般本地配置也有两种形式，一是直接耦合在代码中，二是放在配置文件中。</p>
+<p>直接耦合在代码中是纯新手才回去做的事，这样在不同的环境下、不同的配置下都必须要修改代码。所以除非是简单测试，否则不建议在代码中引入配置。</p>
+<p>配置文件是比较主流的方式，可以针对不同的环境，编写不同的配置文件，在系统启动时候，通过 JVM 的启动参数设置系统属性（如 java -Dconfig_env=”idc”），那么当系统运行时便可以通过 System 的 getProperty 方法获取指定的系统属性值，选择不同的配置文件。</p>
+<p>不过本地配置方案在分布式系统下，都存在局限性：</p>
+<p>系统往往是采用集群部署的，那么集群中的每一个节点都持有同一份配置文件，一旦配置文件发生变化，那么就意味着集群环境中的所有配置文件都需要作出相应的调整。而随着系统的拆分粒度越来越细，维护成本会大大提高，出错的可能性也就越大。</p>
+<p>因此，需要一种集中式资源配置的形式，让所有的集群节点共享同一份配置信息。除此之外，配置信息还应当在运行时候动态变化，系统必须在不重启的情况下获取到这些变更后的数据信息，并及时作出相应的调整策略。</p>
+<h4 id="集中式资源配置"><a href="#集中式资源配置" class="headerlink" title="集中式资源配置"></a>集中式资源配置</h4><p>集中式资源配置平台的好处：</p>
+<ul>
+<li>配置信息统一管理</li>
+<li>动态获取/更新配置信息</li>
+<li>降低运维人员的维护成本</li>
+<li>降低配置出错率</li>
+</ul>
+<p>从本质上说，分布式配置管理服务就是发布/订阅模式，获取配置信息的一方是订阅方，发布配置信息的乙方是推送方。可以很容易的使用 Zookeeper 来实现集中式资源配置。</p>
+<p>获取到最新的配置信息后如何去更新系统中使用的配置信息是一个值得思考的问题。</p>
+<p>如果是仅仅简单的更新单例 POJO 对象属性数据，那么重新进行一些赋值即可，但是根据配置生成的对象实例（如 JDBC 对象实例，Jedis 对象实例等），却不能够简单的重新赋值，而是需要生成新的对象实例。</p>
+<p>所以，当客户端观察到配置信息发生变化后，应当重新进行一次 Bean 解析、注册。核心的操作：</p>
+<ul>
+<li>从远端获取最新的配置文件</li>
+<li>解析 Bean 定义</li>
+<li>销毁 IOC 容器中与 Bean 定义中相同 benaName 的 Bean 实例</li>
+<li>Bean 动态注册</li>
+</ul>
+<p>不过这样似乎正在使用的 Bean 还是之前的 Bean，或许可以有一种动态替换 Bean 的方法？</p>
+<p>使用代理模式，为每个 Bean 动态生成一个子类 Bean。同时，子类 Bean 实现了某个接口，使用该接口可以更改注册的对象。框架保留每一个子类 Bean 对象的弱引用。</p>
+<p>当配置更新发生时候，重新加载 Bean，同时通过弱引用获取当前系统中的子类 Bean 对象，通过更改注册对象的接口，更改该对象内部的 Bean。</p>
+<p>这样对于正在使用的 Bean 也可以进行更新。</p>
+<p>除此之外，还要考虑容灾问题。本地应该有一份从配置中心获取的配置信息的缓存，这样在配置中心宕机之后，仍然可以使用该配置文件进行各项操作。</p>
+<h3 id="大促场景下热点数据读-写优化"><a href="#大促场景下热点数据读-写优化" class="headerlink" title="大促场景下热点数据读/写优化"></a>大促场景下热点数据读/写优化</h3><p>缓存是热点数据访问的一个很常见解决方案。缓存分为本地缓存和分布式缓存。</p>
+<p>本地缓存：</p>
+<p>使用 Ehcache 可以很方便的实现本地缓存（比如 Hibernate 中的二级缓存，就是使用 Ehcache 来实现的）。</p>
+<p>本地缓存（Ehcache）的一些弊端：应用系统本身的可用内存资源就很少，而 Ehcache 本质是同一个进程内的缓存技术，肯定会共享 JVM 中的有限的内存，容易产生 OutOfMemoryError 异常。此外，Ehcache 多少会导致 GC 次数的增多或暂停时间的延长，会影响吞吐量。</p>
+<p>除此之外，本地缓存在需要考虑数据共享的应用场景下完全无能为力，也无法实现横向扩容，并不适合告诉发展的互联网企业。</p>
+<p>所以在实际开发中，本地缓存技术逐渐被分布式缓存技术所取代。</p>
+<p>分布式缓存：</p>
+<p>互联网公司中最常用的缓存技术就是分布式缓存。</p>
+<p>使用 Redis 可以非常方便的实现分布式缓存。在 3.x 版本之前，Redis 不提供 Cluster 功能，如果想使用集群，则必须自行采用一致性哈希算法。</p>
+<p>3.x 之后 Redis 支持 Cluster 功能。</p>
+<p>Redis 实现集群的原理：Redis 集群节点中一共包含 16384 个 Slot，不同的 Redis 节点内各自维护一小段 Slot 用于存储不同区间的数据。当客户端进行数据的读/写操作时，Key 会作为路由条件先进行 CRC16 运算，然后再 mod 16384，以此路由到指定的 Redis节点的 Slot 区间内。</p>
+<h4 id="同一热卖商品高并发读需求"><a href="#同一热卖商品高并发读需求" class="headerlink" title="同一热卖商品高并发读需求"></a>同一热卖商品高并发读需求</h4><p>尽管 Redis 支持 Cluster，但仍然无法解决热点数据的问题。</p>
+<p>比如热点商品、热门微博（马蓉出轨）会导致巨量的请求落到某一个机器上，分布式缓存的单点容量容易瞬间被撑爆，连接资源耗尽。</p>
+<p>有两种解决方案：</p>
+<ul>
+<li>基于 Redis 集群的多写多读方案</li>
+<li>LocalCache 结合 Redis 集群的多级 Cache 方案</li>
+</ul>
+<h5 id="Redis-集群多写多读"><a href="#Redis-集群多写多读" class="headerlink" title="Redis 集群多写多读"></a>Redis 集群多写多读</h5><p>在抢购活动正式开始前，对某一个热卖商品的 Key 进行加工和计算。假设集群环境中有 n 个缓存节点，那么加工和计算后的 Key 也应有 n 个，在最理想的情况下，每一个 Key 都应该被路由到一个指定的缓存节点上（其实大致可以理解为将数据冗余了 n 份）。写的时候向每一个节点写入即可（Redis 写数据的能力也非常强），同步多写不会对程序的吞吐量造成很大的影响。</p>
+<p>一旦同一份商品数据被成功冗余存储到所有的存储节点上，那么无论用户流量有多大，在并发环境下，客户端可以根据加工后的 Key，采用轮询或随机等方式（这部分由路由来做），实现数据访问。实际上就是将单点的访问均匀分摊到各个节点上，避免了某一个缓存节点的 OPS 特别高。</p>
+<p>多读多写有 2 个问题：</p>
+<ol>
+<li>如果保证多写过程中数据的一致性</li>
+<li>由于实现多写的 Key 是提前准备好的，一旦后期集群环境进行了动态扩容，由于每一个缓存节点持有的 Slot 区间发生了变化，所有的 Key 都要重新架构和计算。</li>
+</ol>
+<h5 id="保证多写时的数据一致性"><a href="#保证多写时的数据一致性" class="headerlink" title="保证多写时的数据一致性"></a>保证多写时的数据一致性</h5><p>Redis 集群直接多写的话，缺乏事务保证，在网络不稳定时候会导致集群数据出现不一致。</p>
+<p>可以使用 Zookeeper 来配置同一热卖商品的 Key（路由作为 Leader，其他作为 Follower）。此时 Redis 缓存节点对 Znode 进行监听，一旦 Watch 到 Znode 发生变化，所有的客户端全量更新本地持有的 Key 即可。</p>
+<p>以下三种情况会导致数据多写时候失败：</p>
+<ul>
+<li>网络环境抖动</li>
+<li>Master/Slave 切换</li>
+<li>Master/Slave 全部宕机，集群重新分配 Slot 区间</li>
+</ul>
+<p>当客户端使用加工和计算后的 Key 进行数据写入时候，一旦在某个节点处写入失败，就可以 FailOver 几次，如果超过规定的重试次数还是写入失败，则可以直接修改 Znode 节点中配置的 Key 信息（提出写入失败的 Key），这样所有监听 Zookeeper 的客户端都会感知到 Znode 发生了变化，并且全量更新本地持有的 Key，尽可能的避免脏读（或许还会出现读到老版本的数据的问题）。</p>
+<h5 id="LocalCache-结合-Redis-集群的多级-Cache-方案"><a href="#LocalCache-结合-Redis-集群的多级-Cache-方案" class="headerlink" title="LocalCache 结合 Redis 集群的多级 Cache 方案"></a>LocalCache 结合 Redis 集群的多级 Cache 方案</h5><p><img src="https://i.loli.net/2019/05/13/5cd8f892d39ec95691.png" alt="多级 Cache（轮询）"></p>
+<p>在应用本地引入缓存，定期的从 Redis 集群中获取最新的缓存，对于变化频率小的信息（比如商品详情）轮询设置的时间可以长一些，对于变化频率大的信息（比如商品库存），就可以设置的频繁一些。</p>
+<p>这样对 Redis 的数据读取请求是稳定的，而且压力也不会太大。同时，应用本身也减少了网络连接，增加了并发能力。</p>
+<p>缺点是用户获取到的信息不及时，不过这实际上不会有太大的影响，只会导致一些没库存的商品的少量下单请求误以为还有库存，等到最终减扣库存时候再提示用户所购买的商品已经售罄即可。</p>
+<p>有一点值得注意，本地缓存千万不要设置过期时间，因为这种做法会有一个问题：当用户流量过大时，一旦本地缓存过期，那么本地缓存没有数据，Web 服务器便会直接从分布式缓存中拉取数据到本地缓存。这样会导致大量的请求落到分布式缓存上，然后大量的更新请求对本地缓存重复写入，这会导致程序的吞吐量严重下降。</p>
+<p>还可以在 Redis 服务器和应用之间增加一个消息队列，当写数据成功时候，向消息队列中写入消息，并且推送给应用。可以减少本地缓存和分布式缓存之间数据不一致的窗口期。</p>
+<h5 id="实时热点自动发现"><a href="#实时热点自动发现" class="headerlink" title="实时热点自动发现"></a>实时热点自动发现</h5><p><img src="https://i.loli.net/2019/05/13/5cd8f892d299e24000.png" alt="实时热点自动发现平台"></p>
+<h4 id="同一热卖商品高并发写需求"><a href="#同一热卖商品高并发写需求" class="headerlink" title="同一热卖商品高并发写需求"></a>同一热卖商品高并发写需求</h4><p>如果针对热点数据的所有的并发写操作，都直接落在关系型数据库上，那么会导致大量的并发更新都是针对同一行的，那么必然会导致大量线程相互竞争 InnoDB 的行锁，严重的影响数据库的 TPS，所以为了避免数据库成为瓶颈，应当把热点数据的库存减扣操作转移到关系型数据库之外或者合理控制并发写的流量。</p>
+<h5 id="在小并发情况下使用行锁"><a href="#在小并发情况下使用行锁" class="headerlink" title="在小并发情况下使用行锁"></a>在小并发情况下使用行锁</h5><p>如果并发访问量不是特别大，可以直接在数据库中减扣库存，不过应当放弃事务，而是采用行锁，来避免商品超卖。</p>
+<p>简单地说可以在 item 表中建立一个 version 字段，每次更新都会减少库存量，增加 version，采用 Compare And Set 算法来实现。</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> stock, <span class="keyword">version</span> <span class="keyword">from</span> item <span class="keyword">where</span> <span class="keyword">id</span> = xxx;</span><br><span class="line"><span class="keyword">update</span> item <span class="keyword">set</span> <span class="keyword">version</span> = <span class="keyword">version</span> + <span class="number">1</span>, stock = stock - <span class="number">1</span> <span class="keyword">where</span> <span class="keyword">id</span> = xx <span class="keyword">and</span> <span class="keyword">version</span> = $<span class="keyword">version</span>(刚刚查到的<span class="keyword">version</span>);</span><br></pre></td></tr></table></figure>
+<p>也可以不用加版本号：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">update</span> item <span class="keyword">set</span> stock = stock - <span class="number">1</span> <span class="keyword">where</span> <span class="keyword">id</span> = xxx <span class="keyword">and</span> stock &gt;= <span class="number">1</span>;</span><br></pre></td></tr></table></figure>
+<p>不过在超高并发情况下，大量线程竞争行锁，效率下降。</p>
+<h5 id="在-Redis-中减扣热卖商品库存"><a href="#在-Redis-中减扣热卖商品库存" class="headerlink" title="在 Redis 中减扣热卖商品库存"></a>在 Redis 中减扣热卖商品库存</h5><p>直接在 Redis 中处理库存会导致超卖。（判断大于 0 和减一的操作不是原子的）</p>
+<p>可以使用 Redission（Redis 官网推荐的 Java 语言实现分布式锁的项目）来实现分布式锁。Redission 提供了 lock 和 tryLock 方法。前者在获取到锁之前会阻塞，同时其指明了当前线程获取锁后持有的最长时间。第二个方法会指定一个获取锁最长的等待时间，以及持有锁的时间，如果等待时间已过还没有获取到锁，那么该方法就直接返回。</p>
+<p>使用 Redis 的情况下，Redis 中存储的是实时库存量，而数据库中存储的是实际库存量。变化后的库存可以通过消息队列写回数据库。</p>
+<h5 id="热卖商品库存减扣优化方案"><a href="#热卖商品库存减扣优化方案" class="headerlink" title="热卖商品库存减扣优化方案"></a>热卖商品库存减扣优化方案</h5><p>核心想法是减少获取行锁的次数，将多个减扣库存的请求合并称为一个请求（相应的，这个请求会减扣很多库存）。</p>
+<p>比如说，当前端发起库存减扣请求后，可以对这些请求展开收集；假设收集次数被设置为 100 次，那么达到阈值后在对这些请求做合并处理，获取一次分布式锁后就一次性提交到 Redis 中进行库存减扣。</p>
+<p>不过这个方案还需要考虑两个问题：</p>
+<ul>
+<li>库存扣减结果如何想应该指定的用户</li>
+<li>如何避免商品库存可以售完</li>
+</ul>
+<h5 id="控制单机并发写流量方案"><a href="#控制单机并发写流量方案" class="headerlink" title="控制单机并发写流量方案"></a>控制单机并发写流量方案</h5><p>可以使用单机并发写来降低改造成本。有下面两种方案：</p>
+<ul>
+<li>单机排队串行写方案（在应用层实现请求排队执行）</li>
+<li>抢购限流方案</li>
+</ul>
+<h5 id="现有的解决方案：AliSQL"><a href="#现有的解决方案：AliSQL" class="headerlink" title="现有的解决方案：AliSQL"></a>现有的解决方案：AliSQL</h5><p>性能比原始的 MySQL 高出 70%，而且针对秒杀场景做了特殊优化。</p>
+<h3 id="数据库分库分表"><a href="#数据库分库分表" class="headerlink" title="数据库分库分表"></a>数据库分库分表</h3><h4 id="关系型数据库架构演变"><a href="#关系型数据库架构演变" class="headerlink" title="关系型数据库架构演变"></a>关系型数据库架构演变</h4><p>在互联网场景下，关系型数据库的主要性能瓶颈有两个：</p>
+<ol>
+<li>大量的并发读/写操作，导致单库出现难以承受的负载压力；</li>
+<li>单表存储数据量过大，导致检索效率低下</li>
+</ol>
+<h5 id="数据库读写分离"><a href="#数据库读写分离" class="headerlink" title="数据库读写分离"></a>数据库读写分离</h5><p>项目规模不大时，所有读写都发生在单个数据库中。随着用户规模的不断扩大，单库遇到瓶颈，TPS 越来越低。一般此时会将数据库设置为读写分离模式，由 Master 负责写操作，而 Slave 作为备库，不会开放写操作，但是允许读操作。主从之间保持数据同步即可。</p>
+<p>不过主从同步存在一定的延迟，会导致短暂的数据不一致。</p>
+<h5 id="数据库垂直分库"><a href="#数据库垂直分库" class="headerlink" title="数据库垂直分库"></a>数据库垂直分库</h5><p>将冗余在单库中的多张表分别拆分到不同的业务库中，实现分而治之的数据管理和读/写数据（每个表一个库）。</p>
+<p>不过这样会导致一些问题：无法使用外键。</p>
+<h5 id="数据库水平分库和水平分表"><a href="#数据库水平分库和水平分表" class="headerlink" title="数据库水平分库和水平分表"></a>数据库水平分库和水平分表</h5><p>水平分表：在单表数据非常多（500W条+）时候，可以把在单库中的单个业务表拆分为 n 个逻辑相关的表，不同的业务子表负责存储不同区间的数据，对外形成一个整体，这就是常见的 Sharding 操作。</p>
+<p>水平分表后的业务子表可以包含在单库中，如果 Master 的 TPS 过高，则还可以对垂直分库后的单一业务库进行水平化。同水平分表类似，可以把水平分表后这些业务子表按照特定的算法和规则分散到 n 个逻辑相关的业务子库中。</p>
+<h4 id="Sharding-中间件"><a href="#Sharding-中间件" class="headerlink" title="Sharding 中间件"></a>Sharding 中间件</h4><p>分库分表后，如何让数据库对外屏蔽细节，展现逻辑上的数据视图，是很值得考虑的。目前是使用 Sharding 中间件来解决这个问题，Sharding 中间件来完成 SQL 语句的重写，数据路由等任务。</p>
+<h4 id="分库分表的影响"><a href="#分库分表的影响" class="headerlink" title="分库分表的影响"></a>分库分表的影响</h4><ul>
+<li>事务的 ACID 如何保证</li>
+<li>多表之间的关联查询如何进行</li>
+<li>无法继续使用外键约束</li>
+<li>无法使用 Oracle 提供的 Sequence，或者 MySQL 提供的 AUTO_INCREMENT 生成全局唯一和连续性 ID</li>
+</ul>
+<h5 id="生成全局唯一顺序-ID"><a href="#生成全局唯一顺序-ID" class="headerlink" title="生成全局唯一顺序 ID"></a>生成全局唯一顺序 ID</h5><p>必须要在单机上运行，否者就必须加分布式锁，非常麻烦。</p>
+<p>每个进程去请求 ID 时候，直接分配连续的几千个 ID，然后请求进程缓存在本地，本地全部用完，再去请求下一块。这样的话，加锁的频率很低，实际上不会有太大的影响。</p>
+<p>缺点是中间可能会断掉一些，比如一次性分配了 5000 个，然后客户端宕机了，这 5000 个 ID 没用完的也不能再用了。</p>
+<h5 id="避免复杂查询：使用-Solr"><a href="#避免复杂查询：使用-Solr" class="headerlink" title="避免复杂查询：使用 Solr"></a>避免复杂查询：使用 Solr</h5><p>Solr 定义了一套语言，可以实现任意复杂条件的查找。</p>
+<p>一般在互联网场景下 Solr 有两个最主要的场景：</p>
+<ol>
+<li>字段模糊查找</li>
+<li>数据库分库分表之后，希望同时满足多个维度的条件查找。</li>
+</ol>
+<h5 id="分布式事务"><a href="#分布式事务" class="headerlink" title="分布式事务"></a>分布式事务</h5><p>常见的分布式系统中的一致性协议：</p>
+<ul>
+<li>两阶段提交协议 2PC</li>
+<li>三阶段提交协议 3PC</li>
+<li>Paxos 协议</li>
+</ul>
+<p>分布式事务其实非常耗时，对性能影响很严重，能不用就不用。可以使用消息中间件实现最终一致性，其实就可以了。</p>
+</section>
+    <!-- Tags START -->
+    
+      <div class="tags">
+        <span>Tags:</span>
+        
+  <a href="/tags#读书笔记">
+    <span class="tag-code">读书笔记</span>
+  </a>
+
+      </div>
+    
+    <!-- Tags END -->
+    <!-- NAV START -->
+    
+  <div class="nav-container">
+    <!-- reverse left and right to put prev and next in a more logic postition -->
+    
+      <a class="nav-left" href="/2019/05/10/Zookeeper-一-基础/">
+        <span class="nav-arrow">← </span>
+        
+          Zookeeper(一) 基础
+        
+      </a>
+    
+    
+  </div>
+
+    <!-- NAV END -->
+    <!-- 打赏 START -->
+    
+    <!-- 打赏 END -->
+    <!-- 二维码 START -->
+    
+      <div class="qrcode">
+        <canvas id="share-qrcode"></canvas>
+        <p class="notice">扫描二维码，分享此文章</p>
+      </div>
+    
+    <!-- 二维码 END -->
+    
+      <!-- No Comment -->
+    
+  </article>
+  <!-- Article END -->
+  <!-- Catalog START -->
+  
+    <aside class="catalog-container">
+  <div class="toc-main">
+    <strong class="toc-title">Catalog</strong>
+    
+      <ol class="toc-nav"><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#大流量限流-消峰"><span class="toc-nav-text">大流量限流/消峰</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-4"><a class="toc-nav-link" href="#限流"><span class="toc-nav-text">限流</span></a></li><li class="toc-nav-item toc-nav-level-4"><a class="toc-nav-link" href="#秒杀系统针对业务逻辑的限流（计数器算法）"><span class="toc-nav-text">秒杀系统针对业务逻辑的限流（计数器算法）</span></a></li><li class="toc-nav-item toc-nav-level-4"><a class="toc-nav-link" href="#消峰方案"><span class="toc-nav-text">消峰方案</span></a></li><li class="toc-nav-item toc-nav-level-4"><a class="toc-nav-link" href="#异步调用"><span class="toc-nav-text">异步调用</span></a></li></ol></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#分布式配置管理服务"><span class="toc-nav-text">分布式配置管理服务</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-4"><a class="toc-nav-link" href="#本地配置"><span class="toc-nav-text">本地配置</span></a></li><li class="toc-nav-item toc-nav-level-4"><a class="toc-nav-link" href="#集中式资源配置"><span class="toc-nav-text">集中式资源配置</span></a></li></ol></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#大促场景下热点数据读-写优化"><span class="toc-nav-text">大促场景下热点数据读/写优化</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-4"><a class="toc-nav-link" href="#同一热卖商品高并发读需求"><span class="toc-nav-text">同一热卖商品高并发读需求</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-5"><a class="toc-nav-link" href="#Redis-集群多写多读"><span class="toc-nav-text">Redis 集群多写多读</span></a></li><li class="toc-nav-item toc-nav-level-5"><a class="toc-nav-link" href="#保证多写时的数据一致性"><span class="toc-nav-text">保证多写时的数据一致性</span></a></li><li class="toc-nav-item toc-nav-level-5"><a class="toc-nav-link" href="#LocalCache-结合-Redis-集群的多级-Cache-方案"><span class="toc-nav-text">LocalCache 结合 Redis 集群的多级 Cache 方案</span></a></li><li class="toc-nav-item toc-nav-level-5"><a class="toc-nav-link" href="#实时热点自动发现"><span class="toc-nav-text">实时热点自动发现</span></a></li></ol></li><li class="toc-nav-item toc-nav-level-4"><a class="toc-nav-link" href="#同一热卖商品高并发写需求"><span class="toc-nav-text">同一热卖商品高并发写需求</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-5"><a class="toc-nav-link" href="#在小并发情况下使用行锁"><span class="toc-nav-text">在小并发情况下使用行锁</span></a></li><li class="toc-nav-item toc-nav-level-5"><a class="toc-nav-link" href="#在-Redis-中减扣热卖商品库存"><span class="toc-nav-text">在 Redis 中减扣热卖商品库存</span></a></li><li class="toc-nav-item toc-nav-level-5"><a class="toc-nav-link" href="#热卖商品库存减扣优化方案"><span class="toc-nav-text">热卖商品库存减扣优化方案</span></a></li><li class="toc-nav-item toc-nav-level-5"><a class="toc-nav-link" href="#控制单机并发写流量方案"><span class="toc-nav-text">控制单机并发写流量方案</span></a></li><li class="toc-nav-item toc-nav-level-5"><a class="toc-nav-link" href="#现有的解决方案：AliSQL"><span class="toc-nav-text">现有的解决方案：AliSQL</span></a></li></ol></li></ol></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#数据库分库分表"><span class="toc-nav-text">数据库分库分表</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-4"><a class="toc-nav-link" href="#关系型数据库架构演变"><span class="toc-nav-text">关系型数据库架构演变</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-5"><a class="toc-nav-link" href="#数据库读写分离"><span class="toc-nav-text">数据库读写分离</span></a></li><li class="toc-nav-item toc-nav-level-5"><a class="toc-nav-link" href="#数据库垂直分库"><span class="toc-nav-text">数据库垂直分库</span></a></li><li class="toc-nav-item toc-nav-level-5"><a class="toc-nav-link" href="#数据库水平分库和水平分表"><span class="toc-nav-text">数据库水平分库和水平分表</span></a></li></ol></li><li class="toc-nav-item toc-nav-level-4"><a class="toc-nav-link" href="#Sharding-中间件"><span class="toc-nav-text">Sharding 中间件</span></a></li><li class="toc-nav-item toc-nav-level-4"><a class="toc-nav-link" href="#分库分表的影响"><span class="toc-nav-text">分库分表的影响</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-5"><a class="toc-nav-link" href="#生成全局唯一顺序-ID"><span class="toc-nav-text">生成全局唯一顺序 ID</span></a></li><li class="toc-nav-item toc-nav-level-5"><a class="toc-nav-link" href="#避免复杂查询：使用-Solr"><span class="toc-nav-text">避免复杂查询：使用 Solr</span></a></li><li class="toc-nav-item toc-nav-level-5"><a class="toc-nav-link" href="#分布式事务"><span class="toc-nav-text">分布式事务</span></a></li></ol></li></ol></li></ol>
+    
+  </div>
+</aside>
+  
+  <!-- Catalog END -->
+</main>
+
+<script>
+  (function () {
+    var url = 'http://yoursite.com/2019/05/13/读书笔记：《人人都是架构师》/';
+    var banner = ''
+    if (banner !== '' && banner !== 'undefined' && banner !== 'null') {
+      $('#article-banner').css({
+        'background-image': 'url(' + banner + ')'
+      })
+    } else {
+      $('#article-banner').geopattern(url)
+    }
+    $('.header').removeClass('fixed-header')
+
+    // error image
+    $(".markdown-content img").on('error', function() {
+      $(this).attr('src', 'http://file.muyutech.com/error-img.png')
+      $(this).css({
+        'cursor': 'default'
+      })
+    })
+
+    // zoom image
+    $(".markdown-content img").on('click', function() {
+      var src = $(this).attr('src')
+      if (src !== 'http://file.muyutech.com/error-img.png') {
+        var imageW = $(this).width()
+        var imageH = $(this).height()
+
+        var zoom = ($(window).width() * 0.95 / imageW).toFixed(2)
+        zoom = zoom < 1 ? 1 : zoom
+        zoom = zoom > 2 ? 2 : zoom
+        var transY = (($(window).height() - imageH) / 2).toFixed(2)
+
+        $('body').append('<div class="image-view-wrap"><div class="image-view-inner"><img src="'+ src +'" /></div></div>')
+        $('.image-view-wrap').addClass('wrap-active')
+        $('.image-view-wrap img').css({
+          'width': `${imageW}`,
+          'transform': `translate3d(0, ${transY}px, 0) scale3d(${zoom}, ${zoom}, 1)`
+        })
+        $('html').css('overflow', 'hidden')
+
+        $('.image-view-wrap').on('click', function() {
+          $(this).remove()
+          $('html').attr('style', '')
+        })
+      }
+    })
+  })();
+</script>
+
+
+  <script>
+    var qr = new QRious({
+      element: document.getElementById('share-qrcode'),
+      value: document.location.href
+    });
+  </script>
+
+
+
+
+
+
+    <div class="scroll-top">
+  <span class="arrow-icon"></span>
+</div>
+    <footer class="app-footer">
+  <p class="copyright">
+    &copy; 2019 | Proudly powered by <a href="https://hexo.io" target="_blank">Hexo</a>
+    <br>
+    Theme by <a href="https://github.com/yanm1ng">yanm1ng</a>
+  </p>
+</footer>
+
+<script>
+  function async(u, c) {
+    var d = document, t = 'script',
+      o = d.createElement(t),
+      s = d.getElementsByTagName(t)[0];
+    o.src = u;
+    if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+    s.parentNode.insertBefore(o, s);
+  }
+</script>
+<script>
+  async("//cdnjs.cloudflare.com/ajax/libs/fastclick/1.0.6/fastclick.min.js", function(){
+    FastClick.attach(document.body);
+  })
+</script>
+
+<script>
+  var hasLine = 'true';
+  async("//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js", function(){
+    $('figure pre').each(function(i, block) {
+      var figure = $(this).parents('figure');
+      if (hasLine === 'false') {
+        figure.find('.gutter').hide();
+      }
+      var lang = figure.attr('class').split(' ')[1] || 'code';
+      var codeHtml = $(this).html();
+      var codeTag = document.createElement('code');
+      codeTag.className = lang;
+      codeTag.innerHTML = codeHtml;
+      $(this).attr('class', '').empty().html(codeTag);
+      figure.attr('data-lang', lang.toUpperCase());
+      hljs.highlightBlock(block);
+    });
+  })
+</script>
+<!-- Baidu Tongji -->
+
+<script src="/js/script.js"></script>
+  </body>
+</html>
