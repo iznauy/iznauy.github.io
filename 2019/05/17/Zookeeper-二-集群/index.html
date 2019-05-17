@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html>
+  <head><meta name="generator" content="Hexo 3.8.0">
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+  <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport">
+  <meta name="description" content="iznauy&#39;s blog">
+  <meta name="keyword" content="hexo-theme, vuejs">
+  
+    <link rel="shortcut icon" href="/css/images/logo.png">
+  
+  <title>
+    
+      Zookeeper(二) 集群 | Hexo
+    
+  </title>
+  <link href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+  <link href="//cdnjs.cloudflare.com/ajax/libs/nprogress/0.2.0/nprogress.min.css" rel="stylesheet">
+  <link href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/tomorrow.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="/css/style.css">
+  
+  <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/geopattern/1.2.3/js/geopattern.min.js"></script>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/nprogress/0.2.0/nprogress.min.js"></script>
+  
+    <script src="/js/qrious.js"></script>
+  
+  
+  
+  
+    <!-- MathJax support START -->
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+      });
+    </script>
+
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+      });
+    </script>
+    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <!-- MathJax support END -->
+  
+
+
+</head>
+<div class="wechat-share">
+  <img src="/css/images/logo.png">
+</div>
+
+  <body>
+    <header class="header fixed-header">
+  <div class="header-container">
+    <a class="home-link" href="/">
+      <div class="logo"></div>
+      <span>Hexo</span>
+    </a>
+    <ul class="right-list">
+      
+        <li class="list-item">
+          
+            <a href="/" class="item-link">Home</a>
+          
+        </li>
+      
+        <li class="list-item">
+          
+            <a href="/tags/" class="item-link">Tags</a>
+          
+        </li>
+      
+        <li class="list-item">
+          
+            <a href="/archives/" class="item-link">Archives</a>
+          
+        </li>
+      
+        <li class="list-item">
+          
+            <a href="/project/" class="item-link">Projects</a>
+          
+        </li>
+      
+        <li class="list-item">
+          
+            <a href="/about/" class="item-link">About</a>
+          
+        </li>
+      
+    </ul>
+    <div class="menu">
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+    </div>
+    <div class="menu-mask">
+      <ul class="menu-list">
+        
+          <li class="menu-item">
+            
+              <a href="/" class="menu-link">Home</a>
+            
+          </li>
+        
+          <li class="menu-item">
+            
+              <a href="/tags/" class="menu-link">Tags</a>
+            
+          </li>
+        
+          <li class="menu-item">
+            
+              <a href="/archives/" class="menu-link">Archives</a>
+            
+          </li>
+        
+          <li class="menu-item">
+            
+              <a href="/project/" class="menu-link">Projects</a>
+            
+          </li>
+        
+          <li class="menu-item">
+            
+              <a href="/about/" class="menu-link">About</a>
+            
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</header>
+
+    <div id="article-banner">
+  <h2>Zookeeper(二) 集群</h2>
+  <p class="post-date">2019-05-17</p>
+  <div class="arrow-down">
+    <a href="javascript:;"></a>
+  </div>
+</div>
+<main class="app-body flex-box">
+  <!-- Article START -->
+  <article class="post-article">
+    <section class="markdown-content"><h3 id="集群概论"><a href="#集群概论" class="headerlink" title="集群概论"></a>集群概论</h3><p>Zookeeper 可以运行在集群中。</p>
+<p>Zookeeper 集群包含三类成员：leader，follower，obverser。</p>
+<p>leader 作为中心点处理对所有 Zookeeper 系统变更的请求，像是一个定序器，建立了所有对 Zookeeper 状态更新的顺序。 follower 接受 leader 发出的变更请求，同时对请求进行按序处理，保证数据一致。observer 为了系统的可扩展性而设计，不会参与系统的任何决策。</p>
+<h3 id="请求、事务、标识符"><a href="#请求、事务、标识符" class="headerlink" title="请求、事务、标识符"></a>请求、事务、标识符</h3><p>Zookeeper 服务器会在本地处理读取请求，对于写操作，则都转发给 leader，让 leader 处理写操作。因此，可以通过增加更多的服务器到集群中，处理更多的读请求。</p>
+<p>写操作会导致数据的更新。请求表示源自于客户端发起的操作。数据的更新被称之为事务，包括了处理对应请求而改变 Zookeeper 状态所需要执行的步骤。</p>
+<p>事务是数据更新的基本单位，必须要以原子的方式执行，同时要不被其他事务干扰。在 Zookeeper 中，不存在关系型数据库锁设计的回滚问题，而是确保事务的每一步操作互不干扰。</p>
+<p>同时事务还具有幂等性，对同一个事务执行两次，得到的结果应该是一样的，前提是确保多个事务的执行顺序每次都是一样的。</p>
+<p>当 leader 产生一个事务，就会给事务分配一个标识符，zxid。通过 zxid 对事务进行标识，follower 就可以按照 leader 指定的顺序在各个服务器中按序执行。</p>
+<p>zxid 为一个 long 型整数，分为时间戳和计数器两部分，每个部分32位。</p>
+<h3 id="Leader-选举"><a href="#Leader-选举" class="headerlink" title="Leader 选举"></a>Leader 选举</h3><p>Leader 的主要作用是将每一个写请求转化为一个事务，确保各个节点按序执行事务，从而保证各个节点数据一致性。</p>
+<p>Leader 必须要被仲裁的法定数量的服务器认可才可以成为 Leader（否则就会出现脑裂问题）。</p>
+<p>（总体上说）每个服务器启动之后都会进入 LOOKING 状态，开始选举一个 leader 或者查找已经存在的 leader。如果 leader 已经存在，其他服务器就会通知该服务器谁是 leader，与此同时，新的服务器会和 leader 建立连接，以确保自己的 leader 状态一致。如果每个服务器都处在 LOOKING 状态，服务器之间就会通信来选举 leader。</p>
+<p>对于 leader 选举的消息，称之为 leader 选举通知消息，或简称为通知。</p>
+<p>当一个服务器进入 LOOKING 状态，就会发送向集群中的每个服务器发送一个通知，包括该服务器的投票信息，投票中包含服务器标识符 sid 和最近执行的事务的 zxid 信息。</p>
+<p>当一个服务器收到一个投票信息，该服务器会根据以下规则修改自己的投票信息：</p>
+<ol>
+<li>如果对方的 zxid 比自己的 zxid 更大（其实主要是比较计数器部分，对方的数据更新），或者对方的 zxid 和自己的 zxid 相同，但对方的 sid 比自己的 sid 更大，则更新自己的投票信息为收到的投票信息。</li>
+<li>如果不满足上述条件，那么就不会更新自己的投票信息。</li>
+</ol>
+<p>当一个服务器接收到的仲裁数量的服务器发来的投票都一致时，就表示 leader 选举成功。被选举为 leader 的服务器行使 leader 的权利，其他变成 follower，并试图连接 leader。</p>
+<p>选举最大的 zxid 的原因是为了防止遗漏事务。</p>
+<p>值得一提的是，为了让选举尽可能的在一轮结束，每个服务器都将该消息的延迟设的很长（200ms），保证有充足的时间接收到其他节点的投票。</p>
+<h3 id="Zab"><a href="#Zab" class="headerlink" title="Zab"></a>Zab</h3><p>Zab 是 Zookeeper 中负责执行事务的协议。</p>
+<p>假设当前有一个活动的 leader，并且有足够数量的 follower，通过该协议提交一个事务很简单，类似两阶段提交：</p>
+<ol>
+<li>Leader 向所有 follower 发送一个 proposal 消息 p。</li>
+<li>当一个 follower 收到消息 p 后，会响应一个 ack 消息，通知 leader 其已经接受 proposal。</li>
+<li>当收到仲裁数量的服务器发送的确认消息后，leader 就会发送消息通知 follower 进行提交。</li>
+</ol>
+<p>Zab 保证了下面的几个重要属性：</p>
+<ol>
+<li>如果 leader 按照顺序广播了事务 A，B。那么每个服务器在提交 B 之前必须保证 A 提交完成</li>
+<li>如果某个服务器按照 A B 的顺序提交数据，那么其他服务器也是按照此顺序提交。</li>
+</ol>
+<p>第一个属性保证了事务在任何一个服务器上的执行顺序都是一致的。第二个属性保证了服务器不会跳过任何的事务。</p>
+<p>但是 Zookeeper 并不是始终都有一个活动的 leader，leader 服务器也可能崩溃，其他服务器需要选举一个新的 leader 保证系统整体仍然可用。</p>
+<p>时间戳（有点像年号）的概念代表了管理权随着时间变化的情况。一个时间戳表示了这个服务器行使管理权的这段时间，在一个时间戳内，leader 会广播提案，并且根据计数器识别每一个消息。</p>
+<p>时间戳的值每次随着选举的发生便会增加，同一个服务器成为 leader 之后可能持有不同的时间戳信息。</p>
+<p>Zab 协议保证在新的时间戳的事务开始执行前，旧的时间戳的事务全部被提交。此外，Zab 协议保证同一时间点不会出现两个被仲裁支持的群首。</p>
+<p>选举新的 leader 之后，在向 follower 同步事务时候有两种方式，一种是 follower 落后不太多时候，采用 DIFF 的方式，将新增的内容发过去。另一种是落后很多时候，把整个 SNAP 发送过去。</p>
+<h3 id="观察者"><a href="#观察者" class="headerlink" title="观察者"></a>观察者</h3><p>Observer 接收来自 leader 的消息并提交。不过不同于 follower，observer 并不参与 leader 选举。</p>
+<p>引入 observer 的主要原因是提高读请求的可扩展性，通过加入多个观察者，可以在不牺牲写操作吞吐量的情况下服务更多的读操作。因为不参与投票等，所以不会引起仲裁数量的变化。</p>
+</section>
+    <!-- Tags START -->
+    
+      <div class="tags">
+        <span>Tags:</span>
+        
+  <a href="/tags#Zookeeper">
+    <span class="tag-code">Zookeeper</span>
+  </a>
+
+      </div>
+    
+    <!-- Tags END -->
+    <!-- NAV START -->
+    
+  <div class="nav-container">
+    <!-- reverse left and right to put prev and next in a more logic postition -->
+    
+      <a class="nav-left" href="/2019/05/13/读书笔记：《人人都是架构师》/">
+        <span class="nav-arrow">← </span>
+        
+          读书笔记：《人人都是架构师》
+        
+      </a>
+    
+    
+  </div>
+
+    <!-- NAV END -->
+    <!-- 打赏 START -->
+    
+    <!-- 打赏 END -->
+    <!-- 二维码 START -->
+    
+      <div class="qrcode">
+        <canvas id="share-qrcode"></canvas>
+        <p class="notice">扫描二维码，分享此文章</p>
+      </div>
+    
+    <!-- 二维码 END -->
+    
+      <!-- No Comment -->
+    
+  </article>
+  <!-- Article END -->
+  <!-- Catalog START -->
+  
+    <aside class="catalog-container">
+  <div class="toc-main">
+    <strong class="toc-title">Catalog</strong>
+    
+      <ol class="toc-nav"><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#集群概论"><span class="toc-nav-text">集群概论</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#请求、事务、标识符"><span class="toc-nav-text">请求、事务、标识符</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#Leader-选举"><span class="toc-nav-text">Leader 选举</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#Zab"><span class="toc-nav-text">Zab</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#观察者"><span class="toc-nav-text">观察者</span></a></li></ol>
+    
+  </div>
+</aside>
+  
+  <!-- Catalog END -->
+</main>
+
+<script>
+  (function () {
+    var url = 'http://yoursite.com/2019/05/17/Zookeeper-二-集群/';
+    var banner = ''
+    if (banner !== '' && banner !== 'undefined' && banner !== 'null') {
+      $('#article-banner').css({
+        'background-image': 'url(' + banner + ')'
+      })
+    } else {
+      $('#article-banner').geopattern(url)
+    }
+    $('.header').removeClass('fixed-header')
+
+    // error image
+    $(".markdown-content img").on('error', function() {
+      $(this).attr('src', 'http://file.muyutech.com/error-img.png')
+      $(this).css({
+        'cursor': 'default'
+      })
+    })
+
+    // zoom image
+    $(".markdown-content img").on('click', function() {
+      var src = $(this).attr('src')
+      if (src !== 'http://file.muyutech.com/error-img.png') {
+        var imageW = $(this).width()
+        var imageH = $(this).height()
+
+        var zoom = ($(window).width() * 0.95 / imageW).toFixed(2)
+        zoom = zoom < 1 ? 1 : zoom
+        zoom = zoom > 2 ? 2 : zoom
+        var transY = (($(window).height() - imageH) / 2).toFixed(2)
+
+        $('body').append('<div class="image-view-wrap"><div class="image-view-inner"><img src="'+ src +'" /></div></div>')
+        $('.image-view-wrap').addClass('wrap-active')
+        $('.image-view-wrap img').css({
+          'width': `${imageW}`,
+          'transform': `translate3d(0, ${transY}px, 0) scale3d(${zoom}, ${zoom}, 1)`
+        })
+        $('html').css('overflow', 'hidden')
+
+        $('.image-view-wrap').on('click', function() {
+          $(this).remove()
+          $('html').attr('style', '')
+        })
+      }
+    })
+  })();
+</script>
+
+
+  <script>
+    var qr = new QRious({
+      element: document.getElementById('share-qrcode'),
+      value: document.location.href
+    });
+  </script>
+
+
+
+
+
+
+    <div class="scroll-top">
+  <span class="arrow-icon"></span>
+</div>
+    <footer class="app-footer">
+  <p class="copyright">
+    &copy; 2019 | Proudly powered by <a href="https://hexo.io" target="_blank">Hexo</a>
+    <br>
+    Theme by <a href="https://github.com/yanm1ng">yanm1ng</a>
+  </p>
+</footer>
+
+<script>
+  function async(u, c) {
+    var d = document, t = 'script',
+      o = d.createElement(t),
+      s = d.getElementsByTagName(t)[0];
+    o.src = u;
+    if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+    s.parentNode.insertBefore(o, s);
+  }
+</script>
+<script>
+  async("//cdnjs.cloudflare.com/ajax/libs/fastclick/1.0.6/fastclick.min.js", function(){
+    FastClick.attach(document.body);
+  })
+</script>
+
+<script>
+  var hasLine = 'true';
+  async("//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js", function(){
+    $('figure pre').each(function(i, block) {
+      var figure = $(this).parents('figure');
+      if (hasLine === 'false') {
+        figure.find('.gutter').hide();
+      }
+      var lang = figure.attr('class').split(' ')[1] || 'code';
+      var codeHtml = $(this).html();
+      var codeTag = document.createElement('code');
+      codeTag.className = lang;
+      codeTag.innerHTML = codeHtml;
+      $(this).attr('class', '').empty().html(codeTag);
+      figure.attr('data-lang', lang.toUpperCase());
+      hljs.highlightBlock(block);
+    });
+  })
+</script>
+<!-- Baidu Tongji -->
+
+<script src="/js/script.js"></script>
+  </body>
+</html>
